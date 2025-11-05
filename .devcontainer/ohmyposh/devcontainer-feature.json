@@ -32,7 +32,8 @@
   "customizations": {
     "vscode": {
       "settings": {
-        "terminal.integrated.fontFamily": "Hack Nerd Font, MesloLGS NF, FiraCode Nerd Font, JetBrainsMono Nerd Font, monospace"
+        "terminal.integrated.fontFamily": "Hack Nerd Font, MesloLGS NF, FiraCode Nerd Font, JetBrainsMono Nerd Font, monospace",
+        "terminal.integrated.fontLigatures.enabled": true
       }
     }
   }
