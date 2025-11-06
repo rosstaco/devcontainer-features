@@ -1,0 +1,18 @@
+{
+    "version": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "microsoft-security-devops-cli": {
+                "version": "0.215.0"
+            }
+        }
+    },
+    "custom-install-path": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "microsoft-security-devops-cli": {
+                "installPath": "/usr/bin"
+            }
+        }
+    }
+}
