@@ -15,6 +15,38 @@ NC='\033[0m' # No Color
 
 echo -e "${GREEN}Installing Microsoft Security DevOps CLI...${NC}"
 
+# Ensure curl is available
+if ! command -v curl &> /dev/null; then
+    echo "Installing curl..."
+    export DEBIAN_FRONTEND=noninteractive
+    if command -v apt-get &> /dev/null; then
+        apt-get update && apt-get install -y curl
+    elif command -v apk &> /dev/null; then
+        apk add --no-cache curl
+    elif command -v yum &> /dev/null; then
+        yum install -y curl
+    else
+        echo -e "${RED}Could not install curl. Please install it manually.${NC}"
+        exit 1
+    fi
+fi
+
+if ! command -v unzip &> /dev/null; then
+    echo "Installing unzip..."
+    export DEBIAN_FRONTEND=noninteractive
+    if command -v apt-get &> /dev/null; then
+        apt-get update && apt-get install -y unzip
+    elif command -v apk &> /dev/null; then
+        apk add --no-cache unzip
+    elif command -v yum &> /dev/null; then
+        yum install -y unzip
+    else
+        echo -e "${RED}Could not install unzip. Please install it manually.${NC}"
+        exit 1
+    fi
+fi
+
+
 # Detect architecture
 ARCH=$(uname -m)
 case $ARCH in
