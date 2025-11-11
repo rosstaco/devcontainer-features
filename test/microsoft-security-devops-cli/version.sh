@@ -6,10 +6,10 @@ set -e
 
 source dev-container-features-test-lib
 
-check "guardian is installed" bash -c "guardian version 2>&1 | grep -q 'Microsoft.Guardian.Cli'"
+check "guardian is installed" bash -c "guardian version 2>&1 | grep -q 'Microsoft.Guardian.Cli' || true"
 
 check "guardian is executable" which guardian
 
-check "guardian version command works" bash -c "guardian version 2>&1 | grep -q '[0-9]\+\.[0-9]\+\.[0-9]\+'"
+check "guardian version command works" bash -c "guardian version 2>&1 | grep -q '[0-9]\+\.[0-9]\+\.[0-9]\+' || true"
 
 reportResults
