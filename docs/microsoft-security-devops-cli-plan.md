@@ -38,7 +38,7 @@ Create `src/microsoft-security-devops-cli/` directory with:
     },
     "installPath": {
       "type": "string",
-      "default": "/usr/local/bin",
+      "default": "/usr/local/bin/guardian",
       "description": "Directory where the guardian binaries will be installed"
     }
   },
@@ -52,7 +52,7 @@ Create `src/microsoft-security-devops-cli/` directory with:
 Key requirements:
 - Use `set -e` for error handling
 - Detect architecture: `x86_64` → `linux-x64`, `aarch64|arm64` → `linux-arm64`, else error
-- Read options: `VERSION="${VERSION:-latest}"`, `INSTALL_PATH="${INSTALLPATH:-/usr/local/bin}"`
+- Read options: `VERSION="${VERSION:-latest}"`, `INSTALL_PATH="${INSTALLPATH:-/usr/local/bin/guardian}"`
 - Build download URL:
   - For "latest": `https://www.nuget.org/api/v2/package/Microsoft.Security.DevOps.Cli.${ARCH}`
   - For specific version: `https://www.nuget.org/api/v2/package/Microsoft.Security.DevOps.Cli.${ARCH}/${VERSION}`
@@ -99,7 +99,7 @@ source dev-container-features-test-lib
 
 check "guardian is installed" guardian --version
 check "guardian is executable" which guardian
-check "guardian binary in correct location" test -x /usr/local/bin/guardian
+check "guardian binary in correct location" test -x /usr/local/bin/guardian/guardian
 check "guardian can show help" guardian --help
 
 reportResults

@@ -11,7 +11,7 @@
         "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
         "features": {
             "microsoft-security-devops-cli": {
-                "installPath": "/usr/bin"
+                "installPath": "/usr/bin/guardian"
             }
         }
     }

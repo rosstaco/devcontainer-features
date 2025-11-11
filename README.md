@@ -64,7 +64,7 @@ Installs [Microsoft Security DevOps CLI](https://aka.ms/msdodocs) (`guardian` co
 
 **Options:**
 - `version` - Version to install (default: "latest"). Use "latest" or a specific version like "0.215.0"
-- `installPath` - Installation directory (default: "/usr/local/bin")
+- `installPath` - Installation directory (default: "/usr/local/bin/guardian")
 
 **Supported Architectures:**
 - linux-x64 (x86_64)
