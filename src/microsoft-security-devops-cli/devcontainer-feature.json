@@ -1,0 +1,22 @@
+{
+  "id": "microsoft-security-devops-cli",
+  "version": "1.0.0",
+  "name": "Microsoft Security DevOps CLI",
+  "description": "Installs Microsoft Security DevOps CLI (guardian) for running security analysis tools",
+  "documentationURL": "https://github.com/rosstaco/devcontainer-features/tree/main/src/microsoft-security-devops-cli",
+  "options": {
+    "version": {
+      "type": "string",
+      "default": "latest",
+      "description": "Version of Microsoft Security DevOps CLI to install. Use 'latest' or a specific version like '0.215.0'"
+    },
+    "installPath": {
+      "type": "string",
+      "default": "/usr/local/bin/guardian",
+      "description": "Directory where the guardian binaries will be installed"
+    }
+  },
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ]
+}

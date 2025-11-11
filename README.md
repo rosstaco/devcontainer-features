@@ -46,6 +46,40 @@ To use a custom theme file from your host machine, add a mount in your `devconta
 
 The feature creates a placeholder file at `~/.ohmyposh.json` during installation. If you mount a custom theme to this location, it will be used automatically. Otherwise, the built-in theme specified in the options will be used.
 
+### Microsoft Security DevOps CLI
+
+Installs [Microsoft Security DevOps CLI](https://aka.ms/msdodocs) (`guardian` command) for running security analysis tools without requiring .NET installation.
+
+**Usage:**
+
+```json
+{
+  "features": {
+    "ghcr.io/rosstaco/devcontainer-features/microsoft-security-devops-cli:1": {
+      "version": "latest"
+    }
+  }
+}
+```
+
+**Options:**
+- `version` - Version to install (default: "latest"). Use "latest" or a specific version like "0.215.0"
+- `installPath` - Installation directory (default: "/usr/local/bin/guardian")
+
+**Supported Architectures:**
+- linux-x64 (x86_64)
+- linux-arm64 (aarch64)
+
+**Running Guardian:**
+
+After installation, the `guardian` command is available in your PATH. To initialize guardian in your repository:
+
+```bash
+guardian init --force
+```
+
+Note: `guardian init` requires a git repository, so it must be run manually after the container starts (not during feature installation).
+
 ## Publishing
 
 This repository uses a **GitHub Action** [workflow](.github/workflows/release.yaml) that publishes each Feature to GHCR (GitHub Container Registry).

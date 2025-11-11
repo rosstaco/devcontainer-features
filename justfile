@@ -13,9 +13,14 @@ build-feature feature:
 build-ohmyposh:
     just build-feature ohmyposh
 
+# Build Microsoft Security DevOps CLI feature
+build-microsoft-security-devops-cli:
+    just build-feature microsoft-security-devops-cli
+
 # Build all features
 build-all:
     just build-ohmyposh
+    just build-microsoft-security-devops-cli
 
 # Clean copied features
 clean:
