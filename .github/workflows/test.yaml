@@ -15,6 +15,7 @@ jobs:
         features:
           - ohmyposh
           - microsoft-security-devops-cli
+          - prompty-dumpty
         baseImage:
           - debian:latest
           - ubuntu:latest
@@ -36,6 +37,7 @@ jobs:
         features:
           - ohmyposh
           - microsoft-security-devops-cli
+          - prompty-dumpty
     steps:
       - uses: actions/checkout@v4
 

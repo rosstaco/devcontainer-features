@@ -1,0 +1,14 @@
+{
+  "id": "prompty-dumpty",
+  "version": "1.0.0",
+  "name": "Prompty Dumpty",
+  "description": "Installs prompty-dumpty CLI tool for managing prompty files",
+  "documentationURL": "https://github.com/rosstaco/devcontainer-features/tree/main/src/prompty-dumpty",
+  "options": {
+    "version": {
+      "type": "string",
+      "default": "latest",
+      "description": "Version of prompty-dumpty to install. Use 'latest' or a specific version like '0.6.2'"
+    }
+  }
+}
