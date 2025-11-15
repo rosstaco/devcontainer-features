@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# This test file will be executed against an auto-generated devcontainer.json that
+# includes the 'prompty-dumpty' Feature with no options.
+#
+# Thus, the value of all options will fall back to the default value in the
+# Feature's 'devcontainer-feature.json'.
+#
+# These scripts are run as 'root' by default. Although that can be changed
+# with the '--remote-user' flag.
+
+set -e
+
+# Optional: Import test library bundled with the devcontainer CLI
+source dev-container-features-test-lib
+
+# Feature-specific tests
+check "dumpty is installed" which dumpty
+
+check "dumpty is executable" bash -c "command -v dumpty"
+
+check "dumpty version command works" bash -c "dumpty --version 2>&1 || true"
+
+# Report results
+reportResults
