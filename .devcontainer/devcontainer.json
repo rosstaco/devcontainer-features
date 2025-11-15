@@ -19,10 +19,7 @@
     },
     "features": {
         "ghcr.io/devcontainers/features/docker-in-docker:2": {},
-        "ghcr.io/jsburckhardt/devcontainer-features/just:1": {},
-        "ghcr.io/rosstaco/devcontainer-features/microsoft-security-devops-cli:1": {
-            "version": "latest"
-        }
+        "ghcr.io/jsburckhardt/devcontainer-features/just:1": {}
     },
     "remoteUser": "node",
     "updateContentCommand": "npm install -g @devcontainers/cli"

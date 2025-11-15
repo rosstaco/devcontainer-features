@@ -40,7 +40,11 @@ else
 fi
 
 # Check if pip supports --break-system-packages flag (pip >= 23.0)
-PIP_SUPPORTS_BREAK_SYSTEM=$(pip3 install --help 2>&1 | grep -q "break-system-packages" && echo "yes" || echo "no")
+if pip3 install --help 2>&1 | grep -q "break-system-packages"; then
+    PIP_SUPPORTS_BREAK_SYSTEM="yes"
+else
+    PIP_SUPPORTS_BREAK_SYSTEM="no"
+fi
 
 # Install prompty-dumpty with appropriate flags
 if [ "$PIP_SUPPORTS_BREAK_SYSTEM" = "yes" ]; then
@@ -67,9 +71,10 @@ else
     echo -e "${GREEN}dumpty installation verified successfully${NC}"
     
     # Try to get version info
-    if dumpty --version &> /dev/null; then
-        INSTALLED_VERSION=$(dumpty --version 2>&1 || echo "version unknown")
+    if INSTALLED_VERSION=$(dumpty --version 2>&1); then
         echo "Installed version: $INSTALLED_VERSION"
+    else
+        echo "Installed version: version check failed"
     fi
 fi
 
