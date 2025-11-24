@@ -6,7 +6,7 @@ build-feature feature:
     rm -rf .devcontainer/{{feature}}
     mkdir -p .devcontainer/{{feature}}
     cp src/{{feature}}/devcontainer-feature.json .devcontainer/{{feature}}/
-    cp src/{{feature}}/install.sh .devcontainer/{{feature}}/
+    cp src/{{feature}}/*.sh .devcontainer/{{feature}}/
     echo "✓ Feature copied to .devcontainer/{{feature}}"
 
 # Build Oh My Posh feature

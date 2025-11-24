@@ -19,7 +19,11 @@
     },
     "features": {
         "ghcr.io/devcontainers/features/docker-in-docker:2": {},
-        "ghcr.io/jsburckhardt/devcontainer-features/just:1": {}
+        "ghcr.io/jsburckhardt/devcontainer-features/just:1": {},
+        "ghcr.io/devcontainers/features/common-utils": {
+          "installOhMyZsh": true,
+          "configureZshAsDefaultShell": true
+        }
     },
     "remoteUser": "node",
     "updateContentCommand": "npm install -g @devcontainers/cli"

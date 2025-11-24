@@ -78,6 +78,11 @@ mkdir -p "$INSTALL_PATH"
 mv "$TEMP_FILE" "$INSTALL_PATH/oh-my-posh"
 chmod +x "$INSTALL_PATH/oh-my-posh"
 
+# Install the configure script
+HELPER_SCRIPT="/usr/local/bin/oh-my-posh-configure-shell"
+cp "$(dirname "$0")/configure-shell.sh" "$HELPER_SCRIPT"
+chmod +x "$HELPER_SCRIPT"
+
 echo -e "${GREEN}Oh My Posh binary installed to $INSTALL_PATH/oh-my-posh${NC}"
 
 # Verify installation
@@ -146,7 +151,7 @@ for SHELL_NAME in "${SHELL_ARRAY[@]}"; do
     # Add Oh My Posh initialization
     cat >> "$RC_FILE" << EOF
 
-# Oh My Posh configuration
+# region Oh My Posh configuration
 if [ -s ~/.ohmyposh.json ]; then
     # Use custom theme if mounted
     eval "\$(oh-my-posh init $SHELL_CMD --config ~/.ohmyposh.json)"
@@ -154,6 +159,7 @@ else
     # Use built-in theme
     eval "\$(oh-my-posh init $SHELL_CMD --config $THEME)"
 fi
+# endregion Oh My Posh configuration
 EOF
 
     chown "$USER_NAME:$USER_NAME" "$RC_FILE" 2>/dev/null || true
