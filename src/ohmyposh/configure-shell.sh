@@ -23,11 +23,15 @@ move_to_end() {
                 
                 # Write file content WITHOUT the block to temp file
                 # We use awk to exclude the range
-                awk -v start="$start_marker" -v end="$end_marker" '
-                    $0 ~ start {skip=1}
+                if ! awk -v start="$start_marker" -v end="$end_marker" '
+                    $0 ~ start {skip=1; next}
+                    $0 ~ end {skip=0; next}
                     !skip {print}
-                    $0 ~ end {skip=0}
-                ' "$rc_file" > "$temp_file"
+                ' "$rc_file" > "$temp_file"; then
+                    echo "Error: Failed to process $rc_file"
+                    rm -f "$temp_file"
+                    return 1
+                fi
                 
                 # Append the block to the end
                 echo "" >> "$temp_file"
@@ -45,30 +49,9 @@ move_to_end() {
             # Create a temp file
             local temp_file=$(mktemp)
             
-            # Remove lines containing "oh-my-posh init" and surrounding if/else block if possible
-            # This is harder to do reliably with regex, so we'll just comment out the old init line
-            # and add a new block at the end.
-            
-            # Actually, let's just append the new block and assume the old one will be overridden or harmless
-            # if it's not setting PROMPT_COMMAND in a conflicting way.
-            # But the old one DOES set PROMPT_COMMAND via eval.
-            
-            # Let's try to remove the old block if it matches the standard pattern
-            # Standard pattern:
-            # # Oh My Posh configuration
-            # if [ -s ~/.ohmyposh.json ]; then
-            # ...
-            # fi
-            
-            # We'll use a simpler approach: Remove any lines containing "oh-my-posh init" 
-            # and the specific comment "# Oh My Posh configuration"
-            
-            # Use a temp file for grep output to avoid issues with reading/writing same file
-            # grep -v "oh-my-posh init" "$rc_file" | grep -v "# Oh My Posh configuration" > "$temp_file"
-            
             # Replace lines containing "oh-my-posh init" with ":" (no-op) to disable old config
             # while preserving syntax validity of surrounding if/else blocks.
-            sed 's/.*oh-my-posh init.*/    :/' "$rc_file" > "$temp_file"
+            sed 's/^\([[:space:]]*\).*oh-my-posh init.*/\1:/' "$rc_file" > "$temp_file"
             
             # Replace original file with cleaned content
             mv "$temp_file" "$rc_file"
@@ -95,41 +78,9 @@ move_to_end() {
     fi
 }
 
-# Determine the user
-if [ -n "$_REMOTE_USER" ]; then
-    USER_NAME="$_REMOTE_USER"
-elif [ -n "$REMOTE_USER" ]; then
-    USER_NAME="$REMOTE_USER"
-else
-    USER_NAME="${USERNAME:-vscode}"
-fi
-
-USER_HOME=$(eval echo "~$USER_NAME")
-
 # Check bash
-move_to_end "$USER_HOME/.bashrc"
+move_to_end "$HOME/.bashrc"
 
 # Check zsh
-move_to_end "$USER_HOME/.zshrc"
+move_to_end "$HOME/.zshrc"
 
-# Check fish
-if [ -f "$USER_HOME/.config/fish/config.fish" ]; then
-    # Fish syntax is different, so we handle it separately or adapt move_to_end
-    # For now, let's just check if oh-my-posh init is present and move it to end
-    # Fish doesn't use PROMPT_COMMAND conflict in the same way, but good to be consistent.
-    # However, shell-history for fish uses a symlink or function override, so it might not conflict.
-    # But let's be safe.
-    
-    FISH_CONFIG="$USER_HOME/.config/fish/config.fish"
-    if grep -q "oh-my-posh init" "$FISH_CONFIG"; then
-        echo "Ensuring Oh My Posh configuration is at the end of $FISH_CONFIG..."
-        # Simple move to end for fish
-        grep -v "oh-my-posh init" "$FISH_CONFIG" > "${FISH_CONFIG}.tmp"
-        echo "" >> "${FISH_CONFIG}.tmp"
-        echo "oh-my-posh init fish --config ~/.ohmyposh.json | source" >> "${FISH_CONFIG}.tmp" # Simplified for now, assuming standard init
-        # Actually, let's preserve the original logic if possible or just leave fish alone if it's not broken.
-        # The user issue was specifically about PROMPT_COMMAND which is Bash/Zsh.
-        # Let's skip fish for now to avoid breaking it with incorrect syntax assumptions.
-        echo "Skipping fish configuration adjustment."
-    fi
-fi

@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 cat > test.sh << EOF
 # Oh My Posh configuration
@@ -17,8 +18,7 @@ mv test.sh.tmp test.sh
 cat test.sh
 
 # Check syntax
-bash -n test.sh
-if [ $? -eq 0 ]; then
+if bash -n test.sh; then
     echo "Syntax OK"
 else
     echo "Syntax Error"

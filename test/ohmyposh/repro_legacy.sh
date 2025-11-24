@@ -48,9 +48,9 @@ move_to_end() {
                 # Write file content WITHOUT the block to temp file
                 # We use awk to exclude the range
                 awk -v start="$start_marker" -v end="$end_marker" '
-                    $0 ~ start {skip=1}
+                    $0 ~ start {skip=1; next}
+                    $0 ~ end {skip=0; next}
                     !skip {print}
-                    $0 ~ end {skip=0}
                 ' "$rc_file" > "$temp_file"
                 
                 # Append the block to the end
@@ -88,7 +88,7 @@ move_to_end() {
             # and the specific comment "# Oh My Posh configuration"
             
             # Use a temp file for grep output to avoid issues with reading/writing same file
-            grep -v "oh-my-posh init" "$rc_file" | grep -v "# Oh My Posh configuration" > "$temp_file"
+            sed 's/^\([[:space:]]*\).*oh-my-posh init.*/\1:/' "$rc_file" | grep -v "# Oh My Posh configuration" > "$temp_file"
             
             # Replace original file with cleaned content
             mv "$temp_file" "$rc_file"
