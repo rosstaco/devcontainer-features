@@ -29,6 +29,7 @@
   "installsAfter": [
     "ghcr.io/devcontainers/features/common-utils"
   ],
+  "postCreateCommand": "/usr/local/bin/oh-my-posh-configure-shell",
   "customizations": {
     "vscode": {
       "settings": {
