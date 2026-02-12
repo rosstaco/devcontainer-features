@@ -16,6 +16,7 @@ jobs:
           - ohmyposh
           - microsoft-security-devops-cli
           - prompty-dumpty
+          - copilot-persistence
         baseImage:
           - debian:latest
           - ubuntu:latest
@@ -38,6 +39,7 @@ jobs:
           - ohmyposh
           - microsoft-security-devops-cli
           - prompty-dumpty
+          - copilot-persistence
     steps:
       - uses: actions/checkout@v4
 
