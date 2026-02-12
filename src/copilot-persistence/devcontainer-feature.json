@@ -6,7 +6,7 @@
   "description": "Persists GitHub Copilot CLI settings and chat history across rebuilds",
   "mounts": [
     {
-      "source": "copilot-cli-data",
+      "source": "${devcontainerId}-copilot-data",
       "target": "/copilot-data",
       "type": "volume"
     }

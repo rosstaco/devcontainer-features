@@ -96,7 +96,7 @@ Persists GitHub Copilot CLI settings and chat history across container rebuilds 
 ```
 
 **How It Works:**
-- Mounts a named volume (`copilot-cli-data`) to `/copilot-data`
+- Mounts a named volume (scoped per dev container) to `/copilot-data`
 - Creates a symlink from `~/.copilot` → `/copilot-data`
 - Sets the `COPILOT_DATA_DIR` environment variable to `/copilot-data`
 

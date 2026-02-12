@@ -6,7 +6,7 @@ This devcontainer feature persists GitHub Copilot CLI settings and chat history 
 
 Inspired by the [shell-history pattern](https://github.com/stuartleeks/dev-container-features/tree/main/src/shell-history), this feature:
 
-1. **Mounts a named volume** to `/copilot-data` (neutral location, no permission issues)
+1. **Mounts a named volume** (scoped per dev container via `${devcontainerId}`) to `/copilot-data`
 2. **Creates a symlink** from `~/.copilot` → `/copilot-data`
 3. **Sets ownership** to the container user during installation (auto-detects from `$_REMOTE_USER`)
 
