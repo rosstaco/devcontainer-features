@@ -1,0 +1,19 @@
+{
+  "id": "copilot-persistence",
+  "version": "1.0.0",
+  "name": "Copilot CLI Persistence",
+  "description": "Persists GitHub Copilot CLI settings and chat history across rebuilds",
+  "mounts": [
+    {
+      "source": "copilot-cli-data",
+      "target": "/copilot-data",
+      "type": "volume"
+    }
+  ],
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/copilot-cli"
+  ],
+  "containerEnv": {
+    "COPILOT_DATA_DIR": "/copilot-data"
+  }
+}
