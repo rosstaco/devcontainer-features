@@ -89,6 +89,7 @@ Persists GitHub Copilot CLI settings and chat history across container rebuilds 
 ```json
 {
   "features": {
+    "ghcr.io/devcontainers/features/copilot-cli:1": {},
     "ghcr.io/rosstaco/devcontainer-features/copilot-persistence:1": {}
   }
 }
