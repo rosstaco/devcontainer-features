@@ -1,0 +1,14 @@
+{
+    "debian": {
+        "image": "mcr.microsoft.com/devcontainers/base:debian",
+        "features": {
+            "copilot-persistence": {}
+        }
+    },
+    "ubuntu": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "copilot-persistence": {}
+        }
+    }
+}

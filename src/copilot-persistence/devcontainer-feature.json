@@ -1,0 +1,20 @@
+{
+  "id": "copilot-persistence",
+  "version": "1.0.0",
+  "name": "Copilot CLI Persistence",
+  "documentationURL": "https://github.com/rosstaco/devcontainer-features/tree/main/src/copilot-persistence",
+  "description": "Persists GitHub Copilot CLI settings and chat history across rebuilds",
+  "mounts": [
+    {
+      "source": "${devcontainerId}-copilot-data",
+      "target": "/copilot-data",
+      "type": "volume"
+    }
+  ],
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/copilot-cli"
+  ],
+  "containerEnv": {
+    "COPILOT_DATA_DIR": "/copilot-data"
+  }
+}

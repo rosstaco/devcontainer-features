@@ -80,6 +80,32 @@ guardian init --force
 
 Note: `guardian init` requires a git repository, so it must be run manually after the container starts (not during feature installation).
 
+### Copilot CLI Persistence
+
+Persists GitHub Copilot CLI settings and chat history across container rebuilds using a named Docker volume.
+
+**Usage:**
+
+```json
+{
+  "features": {
+    "ghcr.io/devcontainers/features/copilot-cli:1": {},
+    "ghcr.io/rosstaco/devcontainer-features/copilot-persistence:1": {}
+  }
+}
+```
+
+**How It Works:**
+- Mounts a named volume (scoped per dev container) to `/copilot-data`
+- Creates a symlink from `~/.copilot` → `/copilot-data`
+- Sets the `COPILOT_DATA_DIR` environment variable to `/copilot-data`
+
+**What Persists:**
+- Chat history and sessions
+- CLI configuration (model preferences, settings)
+- Command history
+- Trusted folders
+
 ## Publishing
 
 This repository uses a **GitHub Action** [workflow](.github/workflows/release.yaml) that publishes each Feature to GHCR (GitHub Container Registry).
