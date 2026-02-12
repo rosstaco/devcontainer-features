@@ -19,7 +19,16 @@ set -e
 # Optional: Import test library bundled with the devcontainer CLI
 source dev-container-features-test-lib
 
+# Run the init script to fix volume permissions (normally runs via /etc/profile.d on login)
+if [ -f /usr/local/share/copilot-persistence/init.sh ]; then
+    . /usr/local/share/copilot-persistence/init.sh
+fi
+
 # Feature-specific tests
+
+check "init script exists" test -f /usr/local/share/copilot-persistence/init.sh
+
+check "profile.d script exists" test -f /etc/profile.d/copilot-persistence.sh
 
 check "copilot-data directory exists" test -d /copilot-data
 
