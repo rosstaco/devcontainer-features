@@ -17,13 +17,19 @@ build-ohmyposh:
 build-microsoft-security-devops-cli:
     just build-feature microsoft-security-devops-cli
 
+# Build GitLab CI Local feature
+build-gitlab-ci-local:
+    just build-feature gitlab-ci-local
+
 # Build all features
 build-all:
     just build-ohmyposh
     just build-microsoft-security-devops-cli
+    just build-gitlab-ci-local
 
 # Clean copied features
 clean:
     rm -rf .devcontainer/ohmyposh
+    rm -rf .devcontainer/gitlab-ci-local
     rm -f .devcontainer/*.tgz
     echo "✓ Cleaned local features"
