@@ -1,0 +1,31 @@
+{
+  "id": "gitlab-ci-local",
+  "version": "1.0.0",
+  "name": "GitLab CI Local",
+  "description": "Installs gitlab-ci-local CLI for running GitLab CI/CD pipelines locally",
+  "documentationURL": "https://github.com/rosstaco/devcontainer-features/tree/main/src/gitlab-ci-local",
+  "options": {
+    "version": {
+      "type": "string",
+      "proposals": [
+        "latest"
+      ],
+      "default": "latest",
+      "description": "Version of gitlab-ci-local to install. Use 'latest' or a specific version like '4.67.0'"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "github.copilot.chat.codeGeneration.instructions": [
+          {
+            "text": "This dev container includes `gitlab-ci-local`, which is pre-installed and available on the `PATH`. Use it to run GitLab CI/CD pipelines locally."
+          }
+        ]
+      }
+    }
+  },
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ]
+}
