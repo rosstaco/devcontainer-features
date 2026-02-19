@@ -1,0 +1,10 @@
+{
+    "version": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "gitlab-ci-local": {
+                "version": "4.67.0"
+            }
+        }
+    }
+}

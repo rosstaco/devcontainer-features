@@ -17,6 +17,7 @@ jobs:
           - microsoft-security-devops-cli
           - prompty-dumpty
           - copilot-persistence
+          - gitlab-ci-local
         baseImage:
           - debian:latest
           - ubuntu:latest
@@ -40,6 +41,7 @@ jobs:
           - microsoft-security-devops-cli
           - prompty-dumpty
           - copilot-persistence
+          - gitlab-ci-local
     steps:
       - uses: actions/checkout@v4
 
