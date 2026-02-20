@@ -7,8 +7,9 @@ set -e
 
 source dev-container-features-test-lib
 
-# Source profile scripts to fix volume permissions (mirrors login shell behavior)
-. /etc/profile.d/copilot-persistence.sh 2>/dev/null || true
+# Verify profile script was created and source it to fix volume permissions
+check "copilot-persistence profile script exists" test -f /etc/profile.d/copilot-persistence.sh
+. /etc/profile.d/copilot-persistence.sh
 
 check "copilot-data directory exists" test -d /copilot-data
 
