@@ -1,6 +1,6 @@
 {
   "id": "copilot-persistence",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "name": "Copilot CLI Persistence",
   "documentationURL": "https://github.com/rosstaco/devcontainer-features/tree/main/src/copilot-persistence",
   "description": "Persists GitHub Copilot CLI settings and chat history across rebuilds",
