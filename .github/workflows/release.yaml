@@ -18,7 +18,7 @@ jobs:
         with:
           publish-features: "true"
           base-path-to-features: "./src"
-          generate-docs: "false"
+          generate-docs: "true"
           
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

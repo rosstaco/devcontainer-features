@@ -1,7 +1,3 @@
-# Copilot CLI Persistence Feature
-
-This devcontainer feature persists GitHub Copilot CLI settings and chat history across container rebuilds.
-
 ## How It Works
 
 Inspired by the [shell-history pattern](https://github.com/stuartleeks/dev-container-features/tree/main/src/shell-history), this feature:
@@ -18,17 +14,6 @@ Inspired by the [shell-history pattern](https://github.com/stuartleeks/dev-conta
 - ✅ CLI configuration (model preferences, settings)
 - ✅ Command history
 - ✅ Trusted folders
-
-## Usage
-
-```json
-{
-  "features": {
-    "ghcr.io/devcontainers/features/copilot-cli:1": {},
-    "ghcr.io/rosstaco/devcontainer-features/copilot-persistence:1": {}
-  }
-}
-```
 
 ## Troubleshooting
 
