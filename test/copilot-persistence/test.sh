@@ -22,13 +22,6 @@ source dev-container-features-test-lib
 # Source profile scripts to fix volume permissions (mirrors login shell behavior)
 . /etc/profile.d/copilot-persistence.sh 2>/dev/null || true
 
-# Debug: show permission state
-echo "DEBUG: uid=$(id -u) user=$(whoami)"
-ls -la / | grep copilot-data || true
-cat /etc/profile.d/copilot-persistence.sh 2>/dev/null || echo "DEBUG: no profile.d script"
-sudo chown -R "$(id -u):$(id -g)" /copilot-data 2>&1 || echo "DEBUG: sudo chown failed"
-ls -la / | grep copilot-data || true
-
 # Feature-specific tests
 
 check "copilot-data directory exists" test -d /copilot-data
