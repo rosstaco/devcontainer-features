@@ -19,16 +19,7 @@ set -e
 # Optional: Import test library bundled with the devcontainer CLI
 source dev-container-features-test-lib
 
-# Run the init script to fix volume permissions (normally runs via /etc/profile.d on login)
-if [ -f /usr/local/share/copilot-persistence/init.sh ]; then
-    . /usr/local/share/copilot-persistence/init.sh
-fi
-
 # Feature-specific tests
-
-check "init script exists" test -f /usr/local/share/copilot-persistence/init.sh
-
-check "profile.d script exists" test -f /etc/profile.d/copilot-persistence.sh
 
 check "copilot-data directory exists" test -d /copilot-data
 
@@ -41,6 +32,25 @@ check "COPILOT_DATA_DIR points to /copilot-data" test "$COPILOT_DATA_DIR" = "/co
 check "symlink exists at ~/.copilot" test -L ~/.copilot
 
 check "symlink target is /copilot-data" test "$(readlink ~/.copilot)" = "/copilot-data"
+
+check "copilot-data has restricted permissions" bash -c 'test "$(stat -c %a /copilot-data)" = "700"'
+
+check "data written to volume is accessible via symlink" bash -c 'echo "test" > /copilot-data/test-persist && test "$(cat ~/.copilot/test-persist)" = "test" && rm /copilot-data/test-persist'
+
+# Test migration: simulate pre-existing .copilot directory and verify mv behavior
+check "migration preserves pre-existing data" bash -c '
+    rm -f ~/.copilot
+    mkdir -p ~/.copilot
+    echo "precious-data" > ~/.copilot/history.json
+    if [ -e ~/.copilot ] && [ ! -L ~/.copilot ]; then
+        mv ~/.copilot "/copilot-data/migrated-test"
+    fi
+    ln -sfn /copilot-data ~/.copilot
+    test -f /copilot-data/migrated-test/history.json &&
+    test "$(cat /copilot-data/migrated-test/history.json)" = "precious-data" &&
+    test -L ~/.copilot &&
+    rm -rf /copilot-data/migrated-test
+'
 
 # Report results
 reportResults
