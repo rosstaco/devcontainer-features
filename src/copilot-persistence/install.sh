@@ -23,7 +23,7 @@ EOF
 # Migrate any pre-existing Copilot data into the volume, then symlink
 mkdir -p "${USER_HOME}"
 if [ -e "${USER_HOME}/.copilot" ] && [ ! -L "${USER_HOME}/.copilot" ]; then
-    mv "${USER_HOME}/.copilot" "/copilot-data/migrated-$(date +%s)"
+    mv "${USER_HOME}/.copilot" "/copilot-data/migrated-$(date +%s%N)-$$"
 fi
 ln -sfn /copilot-data "${USER_HOME}/.copilot"
 chown -h "${USER_UID}:${USER_GID}" "${USER_HOME}/.copilot"

@@ -10,8 +10,6 @@ Inspired by the [shell-history pattern](https://github.com/stuartleeks/dev-conta
 2. **Creates a symlink** from `~/.copilot` → `/copilot-data`
 3. **Sets ownership** to the container user during installation (auto-detects from `$_REMOTE_USER`)
 
-> **Note:** If `~/.copilot` already exists as a directory during installation, it is moved into the volume at `/copilot-data/migrated-<timestamp>/` before the symlink is created.
-
 ## What Persists
 
 - ✅ Chat history and sessions
