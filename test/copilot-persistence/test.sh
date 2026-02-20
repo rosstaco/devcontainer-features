@@ -19,6 +19,9 @@ set -e
 # Optional: Import test library bundled with the devcontainer CLI
 source dev-container-features-test-lib
 
+# Source profile scripts to fix volume permissions (mirrors login shell behavior)
+. /etc/profile.d/copilot-persistence.sh 2>/dev/null || true
+
 # Feature-specific tests
 
 check "copilot-data directory exists" test -d /copilot-data

@@ -7,6 +7,9 @@ set -e
 
 source dev-container-features-test-lib
 
+# Source profile scripts to fix volume permissions (mirrors login shell behavior)
+. /etc/profile.d/copilot-persistence.sh 2>/dev/null || true
+
 check "copilot-data directory exists" test -d /copilot-data
 
 check "COPILOT_DATA_DIR is set" test "$COPILOT_DATA_DIR" = "/copilot-data"
