@@ -1,6 +1,17 @@
-# Copilot CLI Persistence Feature
 
-This devcontainer feature persists GitHub Copilot CLI settings and chat history across container rebuilds.
+# Copilot CLI Persistence (copilot-persistence)
+
+Persists GitHub Copilot CLI settings and chat history across rebuilds
+
+## Example Usage
+
+```json
+"features": {
+    "ghcr.io/rosstaco/devcontainer-features/copilot-persistence:1": {}
+}
+```
+
+
 
 ## How It Works
 
@@ -10,23 +21,14 @@ Inspired by the [shell-history pattern](https://github.com/stuartleeks/dev-conta
 2. **Creates a symlink** from `~/.copilot` → `/copilot-data`
 3. **Sets ownership** to the container user during installation (auto-detects from `$_REMOTE_USER`)
 
+> **Note:** If `~/.copilot` already exists as a directory during installation, it is moved into the volume at `/copilot-data/migrated-<timestamp>/` before the symlink is created.
+
 ## What Persists
 
 - ✅ Chat history and sessions
 - ✅ CLI configuration (model preferences, settings)
 - ✅ Command history
 - ✅ Trusted folders
-
-## Usage
-
-```json
-{
-  "features": {
-    "ghcr.io/devcontainers/features/copilot-cli:1": {},
-    "ghcr.io/rosstaco/devcontainer-features/copilot-persistence:1": {}
-  }
-}
-```
 
 ## Troubleshooting
 
@@ -39,3 +41,8 @@ Check the symlink:
 ```bash
 ls -la ~/.copilot
 ```
+
+
+---
+
+_Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/rosstaco/devcontainer-features/blob/main/src/copilot-persistence/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
