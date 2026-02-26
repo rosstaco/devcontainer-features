@@ -9,7 +9,6 @@ CLI_VERSION="${VERSION:-latest}"
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 if [ "$(id -u)" -ne 0 ]; then
@@ -34,12 +33,13 @@ check_packages() {
 
 download_from_github() {
     local release_url=$1
+    local filename=$2
     echo "Downloading gitlab-ci-local from ${release_url}..."
 
     mkdir -p /tmp/gitlab-ci-local
     pushd /tmp/gitlab-ci-local
     wget --show-progress --progress=dot:giga "${release_url}"
-    tar -xzf /tmp/gitlab-ci-local/"${cli_filename}"
+    tar -xzf /tmp/gitlab-ci-local/"${filename}"
     mv gitlab-ci-local /usr/local/bin/gitlab-ci-local
     popd
     rm -rf /tmp/gitlab-ci-local
@@ -56,14 +56,13 @@ install_using_github() {
         exit 1
     fi
 
-    cli_filename="gitlab-ci-local-linux-${arch}.tar.gz"
+    local cli_filename="gitlab-ci-local-linux-${arch}.tar.gz"
     echo "Installing gitlab-ci-local for ${arch} architecture: ${cli_filename}"
 
     if [ "${CLI_VERSION}" = "latest" ]; then
-        download_from_github "https://github.com/firecow/gitlab-ci-local/releases/latest/download/${cli_filename}"
+        download_from_github "https://github.com/firecow/gitlab-ci-local/releases/latest/download/${cli_filename}" "${cli_filename}"
     else
-        # Add leading v to version if it doesn't start with a digit (versions are plain numbers like 4.67.0)
-        download_from_github "https://github.com/firecow/gitlab-ci-local/releases/download/${CLI_VERSION}/${cli_filename}"
+        download_from_github "https://github.com/firecow/gitlab-ci-local/releases/download/${CLI_VERSION}/${cli_filename}" "${cli_filename}"
     fi
 }
 
