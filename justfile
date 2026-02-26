@@ -27,6 +27,10 @@ build-all:
     just build-microsoft-security-devops-cli
     just build-gitlab-ci-local
 
+# Generate feature README.md files from devcontainer-feature.json and NOTES.md
+generate-docs:
+    devcontainer features generate-docs -p src -n rosstaco/devcontainer-features --github-owner rosstaco --github-repo devcontainer-features
+
 # Clean copied features
 clean:
     rm -rf .devcontainer/ohmyposh
