@@ -10,4 +10,6 @@ check "gitlab-ci-local is executable" command -v gitlab-ci-local
 
 check "gitlab-ci-local version command works" bash -c "gitlab-ci-local --version 2>&1 | grep -q '[0-9]\+\.[0-9]\+\.[0-9]\+'"
 
+check "specific version 4.67.0 installed" bash -c "gitlab-ci-local --version 2>&1 | grep -q '4\.67\.0'"
+
 reportResults
