@@ -18,6 +18,7 @@ jobs:
           - prompty-dumpty
           - copilot-persistence
           - gitlab-ci-local
+          - copilot-metrics-lgtm
         baseImage:
           - debian:latest
           - ubuntu:latest
@@ -42,6 +43,7 @@ jobs:
           - prompty-dumpty
           - copilot-persistence
           - gitlab-ci-local
+          - copilot-metrics-lgtm
     steps:
       - uses: actions/checkout@v4
 

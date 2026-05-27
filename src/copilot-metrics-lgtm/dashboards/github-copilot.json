@@ -1,0 +1,2322 @@
+{
+  "dashboard": {
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "description": "Monitors GitHub Copilot usage and performance via Application Insights OpenTelemetry data. Tracks agent operations, LLM token consumption, model latency (response duration and time-to-first-token), chat sessions, tool calls, feature adoption, and errors. Includes trace drill-down for debugging individual Copilot interactions.",
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": null,
+    "links": [
+      {
+        "asDropdown": false,
+        "icon": "external link",
+        "includeVars": false,
+        "keepTime": false,
+        "tags": [],
+        "targetBlank": true,
+        "title": "Tempo",
+        "tooltip": "Open Tempo Explore",
+        "type": "link",
+        "url": "/explore?left=%7B%22datasource%22:%22tempo%22%7D"
+      }
+    ],
+    "panels": [
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 100,
+        "panels": [],
+        "title": "Summary",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "tempo",
+          "uid": "tempo"
+        },
+        "description": "Key performance indicators for agent operations including total operations executed, token consumption (input and output), and average response time across all agents.",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": 0
+                }
+              ]
+            },
+            "unit": "short"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Total Operations"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "blue",
+                    "mode": "fixed"
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Total Input Tokens"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "purple",
+                    "mode": "fixed"
+                  }
+                },
+                {
+                  "id": "unit",
+                  "value": "short"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Total Output Tokens"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "green",
+                    "mode": "fixed"
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Avg Response Time"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "orange",
+                    "mode": "fixed"
+                  }
+                },
+                {
+                  "id": "unit",
+                  "value": "s"
+                },
+                {
+                  "id": "decimals",
+                  "value": 2
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 0,
+          "y": 1
+        },
+        "id": 12,
+        "options": {
+          "colorMode": "background",
+          "graphMode": "none",
+          "justifyMode": "center",
+          "orientation": "auto",
+          "percentChangeColorMode": "standard",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showPercentChange": false,
+          "text": {},
+          "textMode": "auto",
+          "wideLayout": true
+        },
+        "pluginVersion": "12.3.1",
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && name=~\".*invoke_agent.*\" } | count_over_time()",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          },
+          {
+            "refId": "B",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && name=~\".*invoke_agent.*\" } | sum_over_time(span.gen_ai.usage.input_tokens)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          },
+          {
+            "refId": "C",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && name=~\".*invoke_agent.*\" } | sum_over_time(span.gen_ai.usage.output_tokens)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          },
+          {
+            "refId": "D",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && name=~\".*invoke_agent.*\" } | avg_over_time(span:duration)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          }
+        ],
+        "title": "Agent Summary Statistics",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "tempo",
+          "uid": "tempo"
+        },
+        "description": "Key metrics across all LLM chat completions: total calls, total tokens consumed, and average time-to-first-token (TTFT).",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": 0
+                }
+              ]
+            },
+            "unit": "short"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "LLM Calls"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "semi-dark-blue",
+                    "mode": "fixed"
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Chat Sessions"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "semi-dark-green",
+                    "mode": "fixed"
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Avg TTFT"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "semi-dark-orange",
+                    "mode": "fixed"
+                  }
+                },
+                {
+                  "id": "unit",
+                  "value": "ms"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Tool Calls"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "semi-dark-purple",
+                    "mode": "fixed"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 12,
+          "y": 1
+        },
+        "id": 13,
+        "options": {
+          "colorMode": "background",
+          "graphMode": "none",
+          "justifyMode": "center",
+          "orientation": "auto",
+          "percentChangeColorMode": "standard",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showPercentChange": false,
+          "text": {},
+          "textMode": "auto",
+          "wideLayout": true
+        },
+        "pluginVersion": "12.3.1",
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.gen_ai.response.model != nil } | count_over_time()",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          },
+          {
+            "refId": "B",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.copilot_chat.chat_session_id != nil } | count_over_time() by (span.copilot_chat.chat_session_id)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          },
+          {
+            "refId": "C",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.gen_ai.operation.name = \"execute_tool\" } | count_over_time()",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          },
+          {
+            "refId": "D",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.copilot_chat.time_to_first_token > 0 } | avg_over_time(span.copilot_chat.time_to_first_token)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          }
+        ],
+        "title": "Chat & Tool Summary",
+        "type": "stat"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 7
+        },
+        "id": 101,
+        "panels": [],
+        "title": "Usage Over Time",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "tempo",
+          "uid": "tempo"
+        },
+        "description": "Number of LLM API calls over time, grouped by operation type (chat completions, agent invocations, tool executions).",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "bars",
+              "fillOpacity": 80,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "showValues": false,
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "normal"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        },
+        "id": 1,
+        "maxDataPoints": 60,
+        "options": {
+          "legend": {
+            "calcs": [
+              "sum"
+            ],
+            "displayMode": "table",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": true,
+            "mode": "multi",
+            "sort": "desc"
+          }
+        },
+        "pluginVersion": "12.3.1",
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.gen_ai.operation.name != nil } | rate() by (span.gen_ai.operation.name)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          }
+        ],
+        "title": "Operations Over Time",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "tempo",
+          "uid": "tempo"
+        },
+        "description": "Total token consumption (input + output) over time, broken down by model.",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "Tokens",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "bars",
+              "fillOpacity": 80,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "showValues": false,
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "normal"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        },
+        "id": 2,
+        "maxDataPoints": 60,
+        "options": {
+          "legend": {
+            "calcs": [
+              "sum"
+            ],
+            "displayMode": "table",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": true,
+            "mode": "multi",
+            "sort": "desc"
+          }
+        },
+        "pluginVersion": "12.3.1",
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.gen_ai.response.model != nil } | sum_over_time(span.gen_ai.usage.input_tokens) by (span.gen_ai.response.model)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          },
+          {
+            "refId": "B",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.gen_ai.response.model != nil } | sum_over_time(span.gen_ai.usage.output_tokens) by (span.gen_ai.response.model)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          }
+        ],
+        "title": "Token Consumption Over Time by Model",
+        "type": "timeseries"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 16
+        },
+        "id": 102,
+        "panels": [],
+        "title": "Model Performance",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "tempo",
+          "uid": "tempo"
+        },
+        "description": "Breakdown of LLM calls by model. Shows which AI models are being used and how frequently.",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              }
+            },
+            "mappings": []
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 0,
+          "y": 17
+        },
+        "id": 3,
+        "options": {
+          "displayLabels": [
+            "name",
+            "percent"
+          ],
+          "legend": {
+            "displayMode": "table",
+            "placement": "right",
+            "showLegend": true,
+            "values": [
+              "value",
+              "percent"
+            ]
+          },
+          "pieType": "donut",
+          "reduceOptions": {
+            "calcs": [
+              "sum"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "sort": "desc",
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "12.3.1",
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.gen_ai.response.model != nil } | count_over_time() by (span.gen_ai.response.model)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          }
+        ],
+        "title": "Model Usage Distribution",
+        "type": "piechart",
+        "transformations": [
+          {
+            "id": "filterFieldsByName",
+            "options": {
+              "exclude": {
+                "pattern": "^(Time|Value|traceId|span\\..*)$"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "tempo",
+          "uid": "tempo"
+        },
+        "description": "Average and P90 response duration per model. Helps identify which models are slower.",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "fillOpacity": 80,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineWidth": 1,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": 0
+                }
+              ]
+            },
+            "unit": "s"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 8,
+          "y": 17
+        },
+        "id": 4,
+        "options": {
+          "barRadius": 0.05,
+          "barWidth": 0.7,
+          "fullHighlight": false,
+          "groupWidth": 0.7,
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "orientation": "horizontal",
+          "showValue": "auto",
+          "stacking": "none",
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          },
+          "xTickLabelRotation": 0,
+          "xTickLabelSpacing": 0
+        },
+        "pluginVersion": "12.3.1",
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.gen_ai.response.model != nil } | avg_over_time(span:duration) by (span.gen_ai.response.model)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          },
+          {
+            "refId": "B",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.gen_ai.response.model != nil } | quantile_over_time(span:duration, 0.9) by (span.gen_ai.response.model)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          }
+        ],
+        "title": "Response Duration by Model (Avg / P90)",
+        "type": "barchart",
+        "transformations": [
+          {
+            "id": "filterFieldsByName",
+            "options": {
+              "exclude": {
+                "pattern": "^(Time|Value|traceId|span\\..*)$"
+              }
+            }
+          },
+          {
+            "id": "reduce",
+            "options": {
+              "reducers": [
+                "mean"
+              ],
+              "mode": "seriesToRows",
+              "includeTimeField": false
+            }
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "tempo",
+          "uid": "tempo"
+        },
+        "description": "Time to First Token (TTFT) percentiles per model. TTFT measures how quickly the user starts seeing a response stream. Lower is better for user experience.",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "fillOpacity": 80,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineWidth": 1,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": 0
+                }
+              ]
+            },
+            "unit": "ms"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 16,
+          "y": 17
+        },
+        "id": 5,
+        "options": {
+          "barRadius": 0.05,
+          "barWidth": 0.7,
+          "fullHighlight": false,
+          "groupWidth": 0.7,
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "orientation": "horizontal",
+          "showValue": "auto",
+          "stacking": "none",
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          },
+          "xTickLabelRotation": 0,
+          "xTickLabelSpacing": 0
+        },
+        "pluginVersion": "12.3.1",
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.copilot_chat.time_to_first_token > 0 } | quantile_over_time(span.copilot_chat.time_to_first_token, 0.5) by (span.gen_ai.response.model)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          },
+          {
+            "refId": "B",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.copilot_chat.time_to_first_token > 0 } | quantile_over_time(span.copilot_chat.time_to_first_token, 0.9) by (span.gen_ai.response.model)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          }
+        ],
+        "title": "Time to First Token by Model (P50 / P90)",
+        "type": "barchart",
+        "transformations": [
+          {
+            "id": "filterFieldsByName",
+            "options": {
+              "exclude": {
+                "pattern": "^(Time|Value|traceId|span\\..*)$"
+              }
+            }
+          },
+          {
+            "id": "reduce",
+            "options": {
+              "reducers": [
+                "mean"
+              ],
+              "mode": "seriesToRows",
+              "includeTimeField": false
+            }
+          }
+        ]
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 25
+        },
+        "id": 103,
+        "panels": [],
+        "title": "Latency Trends",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "tempo",
+          "uid": "tempo"
+        },
+        "description": "Average LLM response duration over time, split by model.",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "s"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 26
+        },
+        "id": 6,
+        "maxDataPoints": 60,
+        "options": {
+          "legend": {
+            "calcs": [
+              "mean"
+            ],
+            "displayMode": "table",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": true,
+            "mode": "multi",
+            "sort": "desc"
+          }
+        },
+        "pluginVersion": "11.6.9",
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.gen_ai.response.model != nil } | avg_over_time(span:duration) by (span.gen_ai.response.model)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          }
+        ],
+        "title": "Avg Response Duration Over Time by Model",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "tempo",
+          "uid": "tempo"
+        },
+        "description": "Time to First Token (TTFT) P50 and P90 over time. TTFT is the delay before the user sees the first response token streaming in. Critical for perceived responsiveness.",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "ms"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 26
+        },
+        "id": 7,
+        "maxDataPoints": 60,
+        "options": {
+          "legend": {
+            "calcs": [
+              "mean"
+            ],
+            "displayMode": "table",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": true,
+            "mode": "multi",
+            "sort": "desc"
+          }
+        },
+        "pluginVersion": "11.6.9",
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.copilot_chat.time_to_first_token > 0 } | quantile_over_time(span.copilot_chat.time_to_first_token, 0.5)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          },
+          {
+            "refId": "B",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.copilot_chat.time_to_first_token > 0 } | quantile_over_time(span.copilot_chat.time_to_first_token, 0.9)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          }
+        ],
+        "title": "Time to First Token (P50 / P90) Over Time",
+        "type": "timeseries"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 34
+        },
+        "id": 104,
+        "panels": [],
+        "title": "Agent & Feature Activity",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "tempo",
+          "uid": "tempo"
+        },
+        "description": "Breakdown of Copilot feature/agent usage. Shows which Copilot features (Chat, Edit Agent, Commit Generator, Explore, etc.) are being used most.",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              }
+            },
+            "mappings": []
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 0,
+          "y": 35
+        },
+        "id": 8,
+        "options": {
+          "displayLabels": [
+            "name",
+            "percent"
+          ],
+          "legend": {
+            "displayMode": "table",
+            "placement": "right",
+            "showLegend": true,
+            "values": [
+              "value",
+              "percent"
+            ]
+          },
+          "pieType": "donut",
+          "reduceOptions": {
+            "calcs": [
+              "sum"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.9",
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.gen_ai.agent.name != nil } | count_over_time() by (span.gen_ai.agent.name)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          }
+        ],
+        "title": "Copilot Feature Usage",
+        "type": "piechart",
+        "transformations": [
+          {
+            "id": "filterFieldsByName",
+            "options": {
+              "exclude": {
+                "pattern": "^(Time|Value|traceId|span\\..*)$"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "tempo",
+          "uid": "tempo"
+        },
+        "description": "Top tools invoked by Copilot during agent interactions. Includes file operations, search, MCP tool calls, and terminal commands.",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "fillOpacity": 80,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineWidth": 1,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 8,
+          "y": 35
+        },
+        "id": 9,
+        "options": {
+          "barRadius": 0.05,
+          "barWidth": 0.7,
+          "fullHighlight": false,
+          "groupWidth": 0.7,
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "orientation": "horizontal",
+          "showValue": "auto",
+          "stacking": "none",
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          },
+          "xTickLabelRotation": 0,
+          "xTickLabelSpacing": 0
+        },
+        "pluginVersion": "11.6.9",
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.gen_ai.operation.name = \"execute_tool\" && span.gen_ai.tool.name != nil } | count_over_time() by (span.gen_ai.tool.name)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          }
+        ],
+        "title": "Top Tool Calls",
+        "type": "barchart",
+        "transformations": [
+          {
+            "id": "filterFieldsByName",
+            "options": {
+              "exclude": {
+                "pattern": "^(Time|Value|traceId|span\\..*)$"
+              }
+            }
+          },
+          {
+            "id": "reduce",
+            "options": {
+              "reducers": [
+                "sum"
+              ],
+              "mode": "seriesToRows",
+              "includeTimeField": false
+            }
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "tempo",
+          "uid": "tempo"
+        },
+        "description": "Copilot activity over time: chat sessions started, agent conversation turns, and tool calls executed.",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "bars",
+              "fillOpacity": 80,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "normal"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 16,
+          "y": 35
+        },
+        "id": 10,
+        "maxDataPoints": 60,
+        "options": {
+          "legend": {
+            "calcs": [
+              "sum"
+            ],
+            "displayMode": "table",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": true,
+            "mode": "multi",
+            "sort": "desc"
+          }
+        },
+        "pluginVersion": "11.6.9",
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.copilot_chat.chat_session_id != nil } | count_over_time() by (span.copilot_chat.chat_session_id)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          },
+          {
+            "refId": "B",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.gen_ai.operation.name = \"chat\" } | rate()",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          },
+          {
+            "refId": "C",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.gen_ai.operation.name = \"execute_tool\" } | rate()",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          }
+        ],
+        "title": "Sessions, Turns & Tool Calls Over Time",
+        "type": "timeseries"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 43
+        },
+        "id": 105,
+        "panels": [],
+        "title": "Token Efficiency & Cost",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "tempo",
+          "uid": "tempo"
+        },
+        "description": "Detailed breakdown of token usage per model: total input tokens, output tokens, average tokens per call, and call count.",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "filterable": true,
+              "inspect": false
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "TotalInputTokens"
+              },
+              "properties": [
+                {
+                  "id": "custom.cellOptions",
+                  "value": {
+                    "mode": "gradient",
+                    "type": "gauge"
+                  }
+                },
+                {
+                  "id": "color",
+                  "value": {
+                    "mode": "continuous-blues"
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "TotalOutputTokens"
+              },
+              "properties": [
+                {
+                  "id": "custom.cellOptions",
+                  "value": {
+                    "mode": "gradient",
+                    "type": "gauge"
+                  }
+                },
+                {
+                  "id": "color",
+                  "value": {
+                    "mode": "continuous-greens"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 44
+        },
+        "id": 14,
+        "options": {
+          "cellHeight": "sm",
+          "footer": {
+            "countRows": false,
+            "enablePagination": false,
+            "fields": [],
+            "reducer": [
+              "sum"
+            ],
+            "show": true
+          },
+          "showHeader": true,
+          "sortBy": [
+            {
+              "desc": true,
+              "displayName": "TotalInputTokens"
+            }
+          ]
+        },
+        "pluginVersion": "11.6.9",
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.gen_ai.response.model != nil } | count_over_time() by (span.gen_ai.response.model)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          },
+          {
+            "refId": "B",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.gen_ai.response.model != nil } | sum_over_time(span.gen_ai.usage.input_tokens) by (span.gen_ai.response.model)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          },
+          {
+            "refId": "C",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.gen_ai.response.model != nil } | sum_over_time(span.gen_ai.usage.output_tokens) by (span.gen_ai.response.model)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          },
+          {
+            "refId": "D",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.gen_ai.response.model != nil } | avg_over_time(span.gen_ai.usage.input_tokens) by (span.gen_ai.response.model)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          },
+          {
+            "refId": "E",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.gen_ai.response.model != nil } | avg_over_time(span.gen_ai.usage.output_tokens) by (span.gen_ai.response.model)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          }
+        ],
+        "title": "Token Usage by Model",
+        "type": "table"
+      },
+      {
+        "datasource": {
+          "type": "tempo",
+          "uid": "tempo"
+        },
+        "description": "Input vs Output token ratio over time. A high ratio indicates large prompts with relatively small responses, which is typical for code context.",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "Tokens",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 30,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 44
+        },
+        "id": 15,
+        "options": {
+          "legend": {
+            "calcs": [
+              "mean",
+              "sum"
+            ],
+            "displayMode": "table",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": true,
+            "mode": "multi",
+            "sort": "desc"
+          }
+        },
+        "pluginVersion": "11.6.9",
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.gen_ai.usage.input_tokens > 0 } | sum_over_time(span.gen_ai.usage.input_tokens)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          },
+          {
+            "refId": "B",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && span.gen_ai.usage.output_tokens > 0 } | sum_over_time(span.gen_ai.usage.output_tokens)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          }
+        ],
+        "title": "Input vs Output Tokens Over Time",
+        "type": "timeseries"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 52
+        },
+        "id": 106,
+        "panels": [],
+        "title": "Errors & Reliability",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "tempo",
+          "uid": "tempo"
+        },
+        "description": "Exceptions thrown by Copilot Chat over time. Includes canceled operations, MCP server errors, and other failures.",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "bars",
+              "fillOpacity": 80,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "normal"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 53
+        },
+        "id": 11,
+        "maxDataPoints": 60,
+        "options": {
+          "legend": {
+            "calcs": [
+              "sum"
+            ],
+            "displayMode": "table",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": true,
+            "mode": "multi",
+            "sort": "desc"
+          }
+        },
+        "pluginVersion": "11.6.9",
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && event:name = \"exception\" } | rate() by (event.exception.type)",
+            "filters": [],
+            "limit": 20,
+            "tableType": "spans"
+          }
+        ],
+        "title": "Exceptions Over Time",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "tempo",
+          "uid": "tempo"
+        },
+        "description": "Detailed exception log showing each error with timestamp, type, and message. Useful for debugging Copilot issues like MCP server failures or canceled requests.",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "filterable": true,
+              "inspect": true
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "ExceptionType"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 120
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "timestamp"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 180
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 53
+        },
+        "id": 16,
+        "options": {
+          "cellHeight": "sm",
+          "footer": {
+            "countRows": true,
+            "enablePagination": true,
+            "fields": [],
+            "reducer": [
+              "count"
+            ],
+            "show": true
+          },
+          "showHeader": true,
+          "sortBy": [
+            {
+              "desc": true,
+              "displayName": "timestamp"
+            }
+          ]
+        },
+        "pluginVersion": "11.6.9",
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && event:name = \"exception\" } | select(event.exception.type, event.exception.message)",
+            "limit": 100,
+            "tableType": "traces",
+            "filters": []
+          }
+        ],
+        "title": "Exception Details",
+        "type": "table"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 61
+        },
+        "id": 107,
+        "panels": [],
+        "title": "Select a trace",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "tempo",
+          "uid": "tempo"
+        },
+        "description": "Interactive table listing recent Copilot Chat operations. Click any row to drill down into detailed trace information for that specific operation.",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "inspect": false
+            },
+            "links": [
+              {
+                "title": "Open trace \"${__data.fields.traceID}\"",
+                "url": "/d/${__dashboard.uid}/${__dashboard.slug}?var-copilotTraceId=${__data.fields.traceID}",
+                "targetBlank": false
+              }
+            ],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "traceDuration"
+              },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "ms"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "startTime"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 200
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 62
+        },
+        "id": 108,
+        "options": {
+          "cellHeight": "sm",
+          "footer": {
+            "countRows": false,
+            "enablePagination": true,
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": true,
+          "sortBy": [
+            {
+              "desc": true,
+              "displayName": "timestamp"
+            }
+          ]
+        },
+        "pluginVersion": "11.6.9",
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "{ resource.service.name=~\"${source:regex}\" && name=~\".*invoke_agent.*\" } | select(span.gen_ai.operation.name, span.gen_ai.response.model, span.gen_ai.usage.input_tokens, span.gen_ai.usage.output_tokens, resource.service.name)",
+            "limit": 100,
+            "tableType": "traces",
+            "filters": []
+          }
+        ],
+        "title": "Recent Operations",
+        "type": "table"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 70
+        },
+        "id": 109,
+        "panels": [],
+        "title": "Trace detail",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "tempo",
+          "uid": "tempo"
+        },
+        "description": "Detailed trace visualization showing the complete execution flow of a selected Copilot Chat operation, including all dependencies, timing, and hierarchical span relationships.",
+        "gridPos": {
+          "h": 27,
+          "w": 24,
+          "x": 0,
+          "y": 71
+        },
+        "id": 110,
+        "options": {
+          "spanFilters": {
+            "criticalPathOnly": false,
+            "matchesOnly": false,
+            "serviceNameOperator": "=",
+            "spanNameOperator": "=",
+            "tags": [
+              {
+                "id": "copilot-trace-001",
+                "operator": "="
+              }
+            ]
+          }
+        },
+        "pluginVersion": "11.6.9",
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": {
+              "type": "tempo",
+              "uid": "tempo"
+            },
+            "queryType": "traceql",
+            "query": "${copilotTraceId}",
+            "filters": []
+          }
+        ],
+        "title": "Trace Visualization",
+        "type": "traces"
+      }
+    ],
+    "preload": false,
+    "refresh": "30m",
+    "schemaVersion": 42,
+    "tags": [
+      "ai",
+      "copilot",
+      "github-copilot",
+      "grafana-cloud-otel-lgtm",
+      "lgtm",
+      "llm",
+      "opentelemetry",
+      "tempo"
+    ],
+    "templating": {
+      "list": [
+        {
+          "current": {
+            "text": "Tempo",
+            "value": "tempo"
+          },
+          "label": "Tempo datasource",
+          "name": "tempo_ds",
+          "options": [],
+          "query": "tempo",
+          "refresh": 1,
+          "regex": "",
+          "type": "datasource"
+        },
+        {
+          "current": {
+            "text": [
+              "copilot-chat",
+              "github-copilot"
+            ],
+            "value": [
+              "copilot-chat",
+              "github-copilot"
+            ]
+          },
+          "description": "Filter by sender: VS Code Copilot Chat (copilot-chat), Copilot CLI (github-copilot), or both",
+          "includeAll": false,
+          "label": "Source",
+          "multi": true,
+          "name": "source",
+          "options": [
+            {
+              "selected": true,
+              "text": "VS Code Copilot",
+              "value": "copilot-chat"
+            },
+            {
+              "selected": true,
+              "text": "Copilot CLI",
+              "value": "github-copilot"
+            }
+          ],
+          "query": "VS Code Copilot : copilot-chat, Copilot CLI : github-copilot",
+          "type": "custom"
+        },
+        {
+          "current": {
+            "text": "",
+            "value": ""
+          },
+          "description": "Trace Id of the Copilot Chat operations (set via data link from Recent Operations row)",
+          "hide": 2,
+          "label": "Trace Id",
+          "name": "copilotTraceId",
+          "options": [],
+          "query": "",
+          "type": "textbox"
+        }
+      ]
+    },
+    "time": {
+      "from": "now-7d",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "browser",
+    "title": "GitHub Copilot",
+    "uid": "GitHubCopilot",
+    "version": null,
+    "weekStart": ""
+  },
+  "overwrite": true,
+  "message": "Convert to LGTM stack"
+}

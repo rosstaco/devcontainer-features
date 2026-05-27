@@ -1,0 +1,57 @@
+{
+  "id": "copilot-metrics-lgtm",
+  "version": "1.0.0",
+  "name": "Copilot Metrics (LGTM)",
+  "description": "Captures GitHub Copilot OTel traces and visualizes them in a local Grafana LGTM stack (Loki / Grafana / Tempo / Mimir).",
+  "documentationURL": "https://github.com/rosstaco/devcontainer-features/tree/main/src/copilot-metrics-lgtm",
+  "options": {
+    "lgtmImage": {
+      "type": "string",
+      "default": "grafana/otel-lgtm:latest",
+      "description": "LGTM image tag to use."
+    },
+    "installDashboard": {
+      "type": "boolean",
+      "default": true,
+      "description": "POST the bundled Grafana dashboard on first start."
+    },
+    "dockerMode": {
+      "type": "string",
+      "default": "auto",
+      "enum": ["auto", "dind", "dood"],
+      "description": "Docker mode: auto-detect, docker-in-docker, or docker-outside-of-docker."
+    },
+    "grafanaPort": {
+      "type": "string",
+      "default": "3000",
+      "description": "Port for the Grafana web UI (change if 3000 conflicts with your app)."
+    },
+    "captureContent": {
+      "type": "boolean",
+      "default": true,
+      "description": "Capture full prompt/response content in traces. Sets OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT for the CLI and github.copilot.chat.otel.captureContent for Chat."
+    }
+  },
+  "mounts": [
+    {
+      "source": "${devcontainerId}-copilot-lgtm-data",
+      "target": "/lgtm-data",
+      "type": "volume"
+    }
+  ],
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "github.copilot.chat.otel.enabled": true,
+        "github.copilot.chat.otel.exporterType": "otlp-http",
+        "github.copilot.chat.otel.otlpEndpoint": "http://localhost:4318",
+        "github.copilot.chat.otel.captureContent": true
+      }
+    }
+  },
+  "postStartCommand": "bash /usr/local/share/copilot-metrics-lgtm/post-start.sh",
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/docker-in-docker",
+    "ghcr.io/devcontainers/features/docker-outside-of-docker"
+  ]
+}
