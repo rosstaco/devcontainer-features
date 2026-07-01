@@ -1,0 +1,41 @@
+{
+  "id": "atlassian-jira-confluence-cli",
+  "version": "1.0.0",
+  "name": "Atlassian CLI for Jira & Confluence",
+  "description": "Installs the Atlassian CLI (acli) for working with Jira and Confluence Cloud from the command line",
+  "documentationURL": "https://github.com/rosstaco/devcontainer-features/tree/main/src/atlassian-jira-confluence-cli",
+  "options": {
+    "version": {
+      "type": "string",
+      "proposals": [
+        "latest"
+      ],
+      "default": "latest",
+      "description": "Version of acli to install. Use 'latest' or a specific version like '1.3.21'"
+    },
+    "installPath": {
+      "type": "string",
+      "default": "/usr/local/bin",
+      "description": "Directory where the acli binary will be installed"
+    },
+    "configureBrowser": {
+      "type": "boolean",
+      "default": true,
+      "description": "Install an xdg-open shim in /usr/local/bin that prefers $BROWSER (e.g. the VS Code browser helper) so 'acli auth login' opens the OAuth page on your host instead of failing inside the container"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "github.copilot.chat.codeGeneration.instructions": [
+          {
+            "text": "This dev container includes `acli`, the Atlassian CLI, pre-installed and available on the `PATH`. Use it to work with Jira and Confluence Cloud from the command line. Authenticate with `acli auth login` before running commands."
+          }
+        ]
+      }
+    }
+  },
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ]
+}

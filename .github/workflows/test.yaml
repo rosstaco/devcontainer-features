@@ -19,6 +19,7 @@ jobs:
           - copilot-persistence
           - gitlab-ci-local
           - copilot-metrics-lgtm
+          - atlassian-jira-confluence-cli
         baseImage:
           - debian:latest
           - ubuntu:latest
@@ -44,6 +45,7 @@ jobs:
           - copilot-persistence
           - gitlab-ci-local
           - copilot-metrics-lgtm
+          - atlassian-jira-confluence-cli
     steps:
       - uses: actions/checkout@v4
 

@@ -1,0 +1,26 @@
+{
+    "version": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "atlassian-jira-confluence-cli": {
+                "version": "1.3.21"
+            }
+        }
+    },
+    "custom-install-path": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "atlassian-jira-confluence-cli": {
+                "installPath": "/usr/bin"
+            }
+        }
+    },
+    "no-browser-shim": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "atlassian-jira-confluence-cli": {
+                "configureBrowser": false
+            }
+        }
+    }
+}
