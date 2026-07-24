@@ -21,11 +21,16 @@ build-microsoft-security-devops-cli:
 build-gitlab-ci-local:
     just build-feature gitlab-ci-local
 
+# Build Atlassian CLI (acli) feature
+build-atlassian-jira-confluence-cli:
+    just build-feature atlassian-jira-confluence-cli
+
 # Build all features
 build-all:
     just build-ohmyposh
     just build-microsoft-security-devops-cli
     just build-gitlab-ci-local
+    just build-atlassian-jira-confluence-cli
 
 # Generate feature README.md files from devcontainer-feature.json and NOTES.md
 generate-docs:
@@ -35,5 +40,6 @@ generate-docs:
 clean:
     rm -rf .devcontainer/ohmyposh
     rm -rf .devcontainer/gitlab-ci-local
+    rm -rf .devcontainer/atlassian-jira-confluence-cli
     rm -f .devcontainer/*.tgz
     echo "✓ Cleaned local features"
