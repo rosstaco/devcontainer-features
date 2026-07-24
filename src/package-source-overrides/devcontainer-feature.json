@@ -1,0 +1,58 @@
+{
+  "id": "package-source-overrides",
+  "version": "1.0.0",
+  "name": "Package Source Overrides",
+  "description": "Configure npm, pnpm, pip, and NuGet to use internal override package sources instead of public feeds, early in the container lifecycle so other Features resolve packages through them too",
+  "documentationURL": "https://github.com/rosstaco/devcontainer-features/tree/main/src/package-source-overrides",
+  "options": {
+    "npmRegistry": {
+      "type": "string",
+      "default": "",
+      "description": "Registry URL for npm and pnpm (they share .npmrc). Leave empty to skip npm/pnpm. Example: https://artifactory.example.com/artifactory/api/npm/npm-remote/"
+    },
+    "pipIndexUrl": {
+      "type": "string",
+      "default": "",
+      "description": "pip / PyPI index URL that replaces the default index. Leave empty to skip pip. Example: https://artifactory.example.com/artifactory/api/pypi/pypi-remote/simple"
+    },
+    "nugetSource": {
+      "type": "string",
+      "default": "",
+      "description": "NuGet v3 package source URL that replaces nuget.org. Leave empty to skip NuGet. Example: https://artifactory.example.com/artifactory/api/nuget/v3/nuget-remote/index.json"
+    },
+    "nugetSourceName": {
+      "type": "string",
+      "default": "override",
+      "description": "Friendly key/name for the configured NuGet package source"
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "system",
+        "user",
+        "both"
+      ],
+      "default": "both",
+      "description": "Where configuration is written: 'system' (system-wide files), 'user' (root + remote user home), or 'both'"
+    },
+    "strictSsl": {
+      "type": "boolean",
+      "default": true,
+      "description": "When false, allow self-signed/insecure internal proxies (npm strict-ssl=false, pip trusted-host, NuGet allowInsecureConnections)"
+    }
+  },
+  "containerEnv": {
+    "NPM_CONFIG_GLOBALCONFIG": "/etc/npmrc"
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "github.copilot.chat.codeGeneration.instructions": [
+          {
+            "text": "This dev container is configured to resolve packages through internal override sources (npm, pnpm, pip, NuGet) instead of public feeds. Do not reconfigure package managers back to public registries such as registry.npmjs.org, pypi.org, or api.nuget.org."
+          }
+        ]
+      }
+    }
+  }
+}

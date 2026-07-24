@@ -25,12 +25,17 @@ build-gitlab-ci-local:
 build-atlassian-jira-confluence-cli:
     just build-feature atlassian-jira-confluence-cli
 
+# Build Package Source Overrides feature
+build-package-source-overrides:
+    just build-feature package-source-overrides
+
 # Build all features
 build-all:
     just build-ohmyposh
     just build-microsoft-security-devops-cli
     just build-gitlab-ci-local
     just build-atlassian-jira-confluence-cli
+    just build-package-source-overrides
 
 # Generate feature README.md files from devcontainer-feature.json and NOTES.md
 generate-docs:
@@ -41,5 +46,6 @@ clean:
     rm -rf .devcontainer/ohmyposh
     rm -rf .devcontainer/gitlab-ci-local
     rm -rf .devcontainer/atlassian-jira-confluence-cli
+    rm -rf .devcontainer/package-source-overrides
     rm -f .devcontainer/*.tgz
     echo "✓ Cleaned local features"

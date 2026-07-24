@@ -144,6 +144,41 @@ acli jira project list
 
 `acli auth login` opens an OAuth page via `xdg-open`, which doesn't honor `$BROWSER` inside a dev container. With `configureBrowser` enabled (the default), the feature installs a small `xdg-open` shim at `/usr/local/bin/xdg-open` that prefers `$BROWSER` (such as the VS Code browser helper) so the login page opens on your host machine. Set `configureBrowser` to `false` to skip it.
 
+### Package Source Overrides
+
+Points npm, pnpm, pip, and NuGet at internal **override package sources** (a pull-through proxy such as Artifactory, Nexus, or Azure Artifacts) instead of public feeds. It writes system- and user-scoped configuration as early as possible in the container lifecycle so that other Features also resolve packages through the proxy during their own installation.
+
+**Usage:**
+
+```json
+{
+  "features": {
+    "ghcr.io/rosstaco/devcontainer-features/package-source-overrides:1": {
+      "npmRegistry": "https://artifactory.example.com/artifactory/api/npm/npm-remote/",
+      "pipIndexUrl": "https://artifactory.example.com/artifactory/api/pypi/pypi-remote/simple",
+      "nugetSource": "https://artifactory.example.com/artifactory/api/nuget/v3/index.json"
+    },
+    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/devcontainers/features/python:1": {}
+  },
+  "overrideFeatureInstallOrder": [
+    "ghcr.io/rosstaco/devcontainer-features/package-source-overrides"
+  ]
+}
+```
+
+**Options:**
+- `npmRegistry` - registry URL for npm and pnpm (default: "")
+- `pipIndexUrl` - pip / PyPI index URL that replaces the default index (default: "")
+- `nugetSource` - NuGet v3 source URL that replaces nuget.org (default: "")
+- `nugetSourceName` - key/name for the configured NuGet source (default: "override")
+- `scope` - where config is written: `system`, `user`, or `both` (default: "both")
+- `strictSsl` - set to `false` for self-signed / HTTP internal proxies (default: `true`)
+
+**Lifecycle & Ordering:**
+
+The feature declares no `installsAfter` dependencies so it installs as early as possible, and it writes root-readable config (`/etc/pip.conf`, `/etc/npmrc`, `/root/.npmrc`, root `NuGet.Config`) that other Features' build-time (root) package installs pick up automatically. Because a Feature can't force itself ahead of arbitrary third-party Features, list it first in `overrideFeatureInstallOrder` to guarantee it runs before anything that downloads packages. Providing no URLs makes it a safe no-op.
+
 ## Publishing
 
 This repository uses a **GitHub Action** [workflow](.github/workflows/release.yaml) that publishes each Feature to GHCR (GitHub Container Registry).
