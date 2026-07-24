@@ -1,0 +1,48 @@
+{
+    "npm": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "package-source-overrides": {
+                "npmRegistry": "https://proxy.internal/artifactory/api/npm/npm-remote/"
+            }
+        }
+    },
+    "pip": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "package-source-overrides": {
+                "pipIndexUrl": "https://proxy.internal/artifactory/api/pypi/pypi-remote/simple"
+            }
+        }
+    },
+    "nuget": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "package-source-overrides": {
+                "nugetSource": "https://proxy.internal/artifactory/api/nuget/v3/index.json",
+                "nugetSourceName": "corp"
+            }
+        }
+    },
+    "all-insecure": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "package-source-overrides": {
+                "npmRegistry": "https://proxy.internal/npm/",
+                "pipIndexUrl": "https://proxy.internal/pypi/simple",
+                "nugetSource": "https://proxy.internal/nuget/v3/index.json",
+                "strictSsl": false
+            }
+        }
+    },
+    "scope-user": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "package-source-overrides": {
+                "npmRegistry": "https://proxy.internal/npm/",
+                "pipIndexUrl": "https://proxy.internal/pypi/simple",
+                "scope": "user"
+            }
+        }
+    }
+}
