@@ -4,6 +4,18 @@ Custom [dev container Features](https://containers.dev/implementors/features/) f
 
 ## Available Features
 
+| Feature | Description |
+|---------|-------------|
+| [Oh My Posh](src/ohmyposh) | Prompt theme engine for bash, zsh, and fish |
+| [Microsoft Security DevOps CLI](src/microsoft-security-devops-cli) | `guardian` CLI for running security analysis tools without .NET |
+| [Copilot CLI Persistence](src/copilot-persistence) | Persist GitHub Copilot CLI settings & chat history across rebuilds |
+| [Atlassian CLI for Jira & Confluence](src/atlassian-jira-confluence-cli) | `acli` for working with Jira and Confluence Cloud |
+| [Package Source Overrides](src/package-source-overrides) | Point npm, pnpm, pip, and NuGet at internal override feeds |
+| [GitLab CI Local](src/gitlab-ci-local) | Run GitLab CI/CD pipelines locally with `gitlab-ci-local` |
+| [Prompty Dumpty](src/prompty-dumpty) | `dumpty` CLI for managing prompty files |
+
+Each feature's full option reference lives in its `src/<feature>/README.md`.
+
 ### Oh My Posh
 
 Installs [Oh My Posh](https://ohmyposh.dev/), a prompt theme engine for customizing your shell prompt across bash, zsh, and fish.
@@ -178,6 +190,66 @@ Points npm, pnpm, pip, and NuGet at internal **override package sources** (a pul
 **Lifecycle & Ordering:**
 
 The feature declares no `installsAfter` dependencies so it installs as early as possible, and it writes root-readable config (`/etc/pip.conf`, `/etc/npmrc`, `/root/.npmrc`, root `NuGet.Config`) that other Features' build-time (root) package installs pick up automatically. Because a Feature can't force itself ahead of arbitrary third-party Features, list it first in `overrideFeatureInstallOrder` to guarantee it runs before anything that downloads packages. Providing no URLs makes it a safe no-op.
+
+### GitLab CI Local
+
+Installs [gitlab-ci-local](https://github.com/firecow/gitlab-ci-local) so you can run GitLab CI/CD pipelines locally (as a shell or docker executor) without pushing to test them.
+
+**Usage:**
+
+```json
+{
+  "features": {
+    "ghcr.io/rosstaco/devcontainer-features/gitlab-ci-local:1": {
+      "version": "latest"
+    }
+  }
+}
+```
+
+**Options:**
+- `version` - Version to install (default: "latest"). Use "latest" or a specific version like "4.67.0"
+
+**Supported Architectures:**
+- amd64 (x86_64)
+- arm64 (aarch64)
+
+**Getting Started:**
+
+From a project containing a `.gitlab-ci.yml`:
+
+```bash
+gitlab-ci-local                    # run the default pipeline
+gitlab-ci-local --job <job-name>   # run a specific job
+```
+
+### Prompty Dumpty
+
+Installs [prompty-dumpty](https://pypi.org/project/prompty-dumpty/), a CLI (`dumpty`) for managing prompty files.
+
+**Usage:**
+
+```json
+{
+  "features": {
+    "ghcr.io/rosstaco/devcontainer-features/prompty-dumpty:1": {
+      "version": "latest"
+    }
+  }
+}
+```
+
+**Options:**
+- `version` - Version to install (default: "latest"). Use "latest" or a specific version like "0.6.2"
+
+**Getting Started:**
+
+```bash
+dumpty --help
+dumpty --version
+```
+
+Prompty Dumpty is installed system-wide with `pip3 --break-system-packages` (appropriate for containers) and assumes Python 3 is present in the base image.
 
 ## Publishing
 
