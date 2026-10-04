@@ -4,7 +4,7 @@
 # is empty and the Feature is a no-op. We assert the Feature applied cleanly
 # (its static containerEnv is present) and that it wrote no override config.
 #
-# These scripts are run as 'root' by default.
+# These scripts run as the image's remote user (root on plain base images).
 
 set -e
 
@@ -13,11 +13,23 @@ source dev-container-features-test-lib
 
 check "containerEnv NPM_CONFIG_GLOBALCONFIG applied" bash -c '[ "$NPM_CONFIG_GLOBALCONFIG" = "/etc/npmrc" ]'
 
+check "containerEnv BASH_ENV points at the hook path" bash -c '[ "$BASH_ENV" = "/etc/package-source-overrides/bash_env" ]'
+
+check "BASH_ENV hook file not created by default" bash -c '[ ! -e /etc/package-source-overrides/bash_env ]'
+
+check "bash runs cleanly with the (absent) BASH_ENV file" bash -c '[ -z "$(bash -c true 2>&1)" ]'
+
 check "no npm override written by default" bash -c '! grep -rqs "package-source-overrides" /etc/npmrc /root/.npmrc 2>/dev/null'
+
+check "no Yarn override written by default" bash -c '! grep -qs "package-source-overrides" "$HOME/.yarnrc.yml"'
 
 check "no pip override written by default" bash -c '[ ! -e /etc/pip.conf ] || ! grep -qs "package-source-overrides" /etc/pip.conf'
 
+check "no uv override written by default" bash -c '[ ! -e /etc/uv/uv.toml ]'
+
 check "no NuGet override written by default" bash -c '[ ! -e /etc/opt/NuGet/Config/NuGet.Config ]'
+
+check "no env-only overrides written by default" bash -c '[ ! -e /etc/profile.d/package-source-overrides.sh ] && [ ! -e /etc/package-source-overrides/env.sh ]'
 
 # Report results
 reportResults

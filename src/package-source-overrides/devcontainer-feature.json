@@ -1,19 +1,24 @@
 {
   "id": "package-source-overrides",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "name": "Package Source Overrides",
-  "description": "Configure npm, pnpm, pip, and NuGet to use internal override package sources instead of public feeds, early in the container lifecycle so other Features resolve packages through them too",
+  "description": "Configure npm, pnpm, Yarn, Corepack, pip, uv, and NuGet to use internal override package sources instead of public feeds, so other Features and your projects resolve packages through them",
   "documentationURL": "https://github.com/rosstaco/devcontainer-features/tree/main/src/package-source-overrides",
   "options": {
     "npmRegistry": {
       "type": "string",
       "default": "",
-      "description": "Registry URL for npm and pnpm (they share .npmrc). Leave empty to skip npm/pnpm. Example: https://artifactory.example.com/artifactory/api/npm/npm-remote/"
+      "description": "Registry URL for npm, pnpm, Yarn (Classic and Berry), and Corepack. Leave empty to skip. Example: https://artifactory.example.com/artifactory/api/npm/npm-remote/"
     },
     "pipIndexUrl": {
       "type": "string",
       "default": "",
-      "description": "pip / PyPI index URL that replaces the default index. Leave empty to skip pip. Example: https://artifactory.example.com/artifactory/api/pypi/pypi-remote/simple"
+      "description": "PyPI index URL for pip and uv that replaces the default index. Leave empty to skip. Example: https://artifactory.example.com/artifactory/api/pypi/pypi-remote/simple"
+    },
+    "uvPythonInstallMirror": {
+      "type": "string",
+      "default": "",
+      "description": "Mirror of the python-build-standalone GitHub releases used for uv-managed Python downloads (uv 'python-install-mirror'). Leave empty to skip. Example: https://artifactory.example.com/artifactory/github-remote/astral-sh/python-build-standalone/releases/download"
     },
     "nugetSource": {
       "type": "string",
@@ -33,23 +38,30 @@
         "both"
       ],
       "default": "both",
-      "description": "Where configuration is written: 'system' (system-wide files), 'user' (root + remote user home), or 'both'"
+      "description": "Where configuration is written: 'system' (system-wide files), 'user' (root + remote user home), or 'both'. pnpm and Yarn Berry have no system-wide config, so their per-user files are always written"
     },
     "strictSsl": {
       "type": "boolean",
       "default": true,
-      "description": "When false, allow self-signed/insecure internal proxies (npm strict-ssl=false, pip trusted-host, NuGet allowInsecureConnections)"
+      "description": "When false, allow self-signed/insecure internal proxies (npm strict-ssl=false, Yarn enableStrictSsl=false, pip trusted-host, uv allow-insecure-host, NuGet allowInsecureConnections)"
+    },
+    "bashEnvHook": {
+      "type": "boolean",
+      "default": false,
+      "description": "Opt-in: export environment-variable-only overrides (e.g. COREPACK_NPM_REGISTRY) to every non-interactive bash process via BASH_ENV, so install scripts of Features that run after this one see them at build time"
     }
   },
   "containerEnv": {
-    "NPM_CONFIG_GLOBALCONFIG": "/etc/npmrc"
+    "NPM_CONFIG_GLOBALCONFIG": "/etc/npmrc",
+    "PACKAGE_SOURCE_OVERRIDES_PREV_BASH_ENV": "${BASH_ENV}",
+    "BASH_ENV": "/etc/package-source-overrides/bash_env"
   },
   "customizations": {
     "vscode": {
       "settings": {
         "github.copilot.chat.codeGeneration.instructions": [
           {
-            "text": "This dev container is configured to resolve packages through internal override sources (npm, pnpm, pip, NuGet) instead of public feeds. Do not reconfigure package managers back to public registries such as registry.npmjs.org, pypi.org, or api.nuget.org."
+            "text": "This dev container is configured to resolve packages through internal override sources (npm, pnpm, Yarn, Corepack, pip, uv, NuGet) instead of public feeds. Do not reconfigure package managers back to public registries such as registry.npmjs.org, registry.yarnpkg.com, pypi.org, or api.nuget.org."
           }
         ]
       }
