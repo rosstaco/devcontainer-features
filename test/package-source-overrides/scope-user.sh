@@ -13,8 +13,14 @@ check "remote user ~/.npmrc present" test -f /home/vscode/.npmrc
 
 check "remote user pip.conf present" test -f /home/vscode/.config/pip/pip.conf
 
+check "remote user uv.toml present" test -f /home/vscode/.config/uv/uv.toml
+
+check "remote user ~/.yarnrc.yml present" test -f /home/vscode/.yarnrc.yml
+
 check "system /etc/npmrc absent" bash -c '[ ! -e /etc/npmrc ]'
 
 check "system /etc/pip.conf absent" bash -c '[ ! -e /etc/pip.conf ]'
+
+check "system /etc/uv/uv.toml absent" bash -c '[ ! -e /etc/uv/uv.toml ]'
 
 reportResults

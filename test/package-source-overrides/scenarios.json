@@ -11,7 +11,8 @@
         "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
         "features": {
             "package-source-overrides": {
-                "pipIndexUrl": "https://proxy.internal/artifactory/api/pypi/pypi-remote/simple"
+                "pipIndexUrl": "https://proxy.internal/artifactory/api/pypi/pypi-remote/simple",
+                "uvPythonInstallMirror": "https://proxy.internal/github/python-build-standalone"
             }
         }
     },
@@ -28,8 +29,9 @@
         "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
         "features": {
             "package-source-overrides": {
-                "npmRegistry": "https://proxy.internal/npm/",
+                "npmRegistry": "http://proxy.internal:8081/npm/",
                 "pipIndexUrl": "https://proxy.internal/pypi/simple",
+                "uvPythonInstallMirror": "https://proxy.internal/github/python-build-standalone",
                 "nugetSource": "https://proxy.internal/nuget/v3/index.json",
                 "strictSsl": false
             }
@@ -42,6 +44,26 @@
                 "npmRegistry": "https://proxy.internal/npm/",
                 "pipIndexUrl": "https://proxy.internal/pypi/simple",
                 "scope": "user"
+            }
+        }
+    },
+    "scope-system": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "package-source-overrides": {
+                "npmRegistry": "https://proxy.internal/npm/",
+                "pipIndexUrl": "https://proxy.internal/pypi/simple",
+                "nugetSource": "https://proxy.internal/nuget/v3/index.json",
+                "scope": "system"
+            }
+        }
+    },
+    "bash-env-hook": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "package-source-overrides": {
+                "npmRegistry": "https://proxy.internal/npm/",
+                "bashEnvHook": true
             }
         }
     }

@@ -22,4 +22,10 @@ check "remote user NuGet.Config exists" test -f "${USERCFG}"
 
 check "remote user NuGet.Config owned by vscode" bash -c '[ "$(stat -c %U '"${USERCFG}"')" = "vscode" ]'
 
+check "machine-wide config has disabledPackageSources" grep -qF "<disabledPackageSources>" "${MACHINE}"
+
+check "machine-wide config disables nuget.org" grep -qF '<add key="nuget.org" value="true" />' "${MACHINE}"
+
+check "remote user config disables nuget.org" grep -qF '<add key="nuget.org" value="true" />' "${USERCFG}"
+
 reportResults

@@ -10,7 +10,7 @@ Custom [dev container Features](https://containers.dev/implementors/features/) f
 | [Microsoft Security DevOps CLI](src/microsoft-security-devops-cli) | `guardian` CLI for running security analysis tools without .NET |
 | [Copilot CLI Persistence](src/copilot-persistence) | Persist GitHub Copilot CLI settings & chat history across rebuilds |
 | [Atlassian CLI for Jira & Confluence](src/atlassian-jira-confluence-cli) | `acli` for working with Jira and Confluence Cloud |
-| [Package Source Overrides](src/package-source-overrides) | Point npm, pnpm, pip, and NuGet at internal override feeds |
+| [Package Source Overrides](src/package-source-overrides) | Point npm, pnpm, Yarn, Corepack, pip, uv, and NuGet at internal override feeds |
 | [GitLab CI Local](src/gitlab-ci-local) | Run GitLab CI/CD pipelines locally with `gitlab-ci-local` |
 | [Prompty Dumpty](src/prompty-dumpty) | `dumpty` CLI for managing prompty files |
 
@@ -158,7 +158,7 @@ acli jira project list
 
 ### Package Source Overrides
 
-Points npm, pnpm, pip, and NuGet at internal **override package sources** (a pull-through proxy such as Artifactory, Nexus, or Azure Artifacts) instead of public feeds. It writes system- and user-scoped configuration as early as possible in the container lifecycle so that other Features also resolve packages through the proxy during their own installation.
+Points npm, pnpm, Yarn, Corepack, pip, uv, and NuGet at internal **override package sources** (a pull-through proxy such as Artifactory, Nexus, or Azure Artifacts) instead of public feeds. It writes system- and user-scoped configuration so that Features installed after it, and your projects, resolve packages through the proxy.
 
 **Usage:**
 
@@ -180,16 +180,18 @@ Points npm, pnpm, pip, and NuGet at internal **override package sources** (a pul
 ```
 
 **Options:**
-- `npmRegistry` - registry URL for npm and pnpm (default: "")
-- `pipIndexUrl` - pip / PyPI index URL that replaces the default index (default: "")
+- `npmRegistry` - registry URL for npm, pnpm, Yarn (Classic and Berry), and Corepack (default: "")
+- `pipIndexUrl` - PyPI index URL for pip and uv that replaces the default index (default: "")
+- `uvPythonInstallMirror` - mirror of the python-build-standalone releases for uv-managed Python downloads (default: "")
 - `nugetSource` - NuGet v3 source URL that replaces nuget.org (default: "")
 - `nugetSourceName` - key/name for the configured NuGet source (default: "override")
 - `scope` - where config is written: `system`, `user`, or `both` (default: "both")
 - `strictSsl` - set to `false` for self-signed / HTTP internal proxies (default: `true`)
+- `bashEnvHook` - opt-in `BASH_ENV` hook so later Features' install scripts see env-var-only overrides such as `COREPACK_NPM_REGISTRY` (default: `false`)
 
-**Lifecycle & Ordering:**
+**Install Order:**
 
-The feature declares no `installsAfter` dependencies so it installs as early as possible, and it writes root-readable config (`/etc/pip.conf`, `/etc/npmrc`, `/root/.npmrc`, root `NuGet.Config`) that other Features' build-time (root) package installs pick up automatically. Because a Feature can't force itself ahead of arbitrary third-party Features, list it first in `overrideFeatureInstallOrder` to guarantee it runs before anything that downloads packages. Providing no URLs makes it a safe no-op.
+Features install in rounds, and within a round the spec sorts them alphabetically by registry path, so `ghcr.io/devcontainers/*` Features install *before* this one unless you change the order. Per repository, list it first in `overrideFeatureInstallOrder` (as above). Machine-wide via VS Code's `dev.containers.defaultFeatures` there is no global override order; add `ghcr.io/devcontainers/features/common-utils:2` to the defaults too, because the official Features declare `installsAfter: common-utils` and therefore move after this Feature. See the [Feature docs](src/package-source-overrides) for details and caveats. Providing no URLs makes it a safe no-op.
 
 ### GitLab CI Local
 
