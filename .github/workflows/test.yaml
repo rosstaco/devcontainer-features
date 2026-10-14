@@ -19,6 +19,7 @@ jobs:
           - copilot-persistence
           - gitlab-ci-local
           - atlassian-jira-confluence-cli
+          - atlassian-teamwork-graph-cli
           - package-source-overrides
         baseImage:
           - debian:latest
@@ -45,6 +46,7 @@ jobs:
           - copilot-persistence
           - gitlab-ci-local
           - atlassian-jira-confluence-cli
+          - atlassian-teamwork-graph-cli
           - package-source-overrides
     steps:
       - uses: actions/checkout@v4

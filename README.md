@@ -10,6 +10,7 @@ Custom [dev container Features](https://containers.dev/implementors/features/) f
 | [Microsoft Security DevOps CLI](src/microsoft-security-devops-cli) | `guardian` CLI for running security analysis tools without .NET |
 | [Copilot CLI Persistence](src/copilot-persistence) | Persist GitHub Copilot CLI settings & chat history across rebuilds |
 | [Atlassian CLI for Jira & Confluence](src/atlassian-jira-confluence-cli) | `acli` for working with Jira and Confluence Cloud |
+| [Atlassian Teamwork Graph CLI](src/atlassian-teamwork-graph-cli) | `twg` for Jira, Confluence, Bitbucket, JSM and the Teamwork Graph, built for AI agents |
 | [Package Source Overrides](src/package-source-overrides) | Point npm, pnpm, Yarn, Corepack, pip, uv, and NuGet at internal override feeds |
 | [GitLab CI Local](src/gitlab-ci-local) | Run GitLab CI/CD pipelines locally with `gitlab-ci-local` |
 | [Prompty Dumpty](src/prompty-dumpty) | `dumpty` CLI for managing prompty files |
@@ -155,6 +156,39 @@ acli jira project list
 **Browser Login:**
 
 `acli auth login` opens an OAuth page via `xdg-open`, which doesn't honor `$BROWSER` inside a dev container. With `configureBrowser` enabled (the default), the feature installs a small `xdg-open` shim at `/usr/local/bin/xdg-open` that prefers `$BROWSER` (such as the VS Code browser helper) so the login page opens on your host machine. Set `configureBrowser` to `false` to skip it.
+
+### Atlassian Teamwork Graph CLI
+
+Installs the [Atlassian Teamwork Graph CLI](https://developer.atlassian.com/platform/teamwork-graph/twg-cli/) (`twg`) for working with Jira, Confluence, JSM, Bitbucket, Loom, Trello and the Teamwork Graph, from the terminal or from AI coding agents. It complements `acli`, and the two Features can be used together.
+
+**Usage:**
+
+```json
+{
+  "features": {
+    "ghcr.io/rosstaco/devcontainer-features/atlassian-teamwork-graph-cli:1": {}
+  },
+  "remoteEnv": {
+    "TWG_TOKEN": "${localEnv:TWG_TOKEN}",
+    "TWG_USER": "${localEnv:TWG_USER}",
+    "TWG_SITE": "${localEnv:TWG_SITE}"
+  }
+}
+```
+
+The `remoteEnv` block is optional. Use it to pass credentials from your host instead of running `twg login`.
+
+**Options:**
+- `version` - Version of twg to install (default: "latest"). Use "latest" or a specific version like "1.3.5"
+- `installSkills` - Install the TWG agent skills into `~/.agents/skills` and `~/.claude/skills` (default: `false`)
+- `enableTelemetry` - Allow twg telemetry. When `false`, `DO_NOT_TRACK=1` and `TWG_DISABLE_3P_DATA_TELEMETRY=1` are exported (default: `false`)
+- `persistAuth` - Keep `~/.config/twg` on a named volume so `twg login` survives rebuilds (default: `true`)
+- `configureBrowser` - Install an `xdg-open` shim that prefers `$BROWSER` so `twg login` opens on your host (default: `true`)
+
+**How It Works:**
+- Downloads the official binary from Atlassian and checks its SHA-256 checksum. It skips the interactive installer, which asks for consent and login during the build.
+- Installs to `~/.local/bin/twg` for the remote user, with a `/usr/local/bin/twg` symlink
+- Run `twg login` and then `twg doctor` once the container starts
 
 ### Package Source Overrides
 
