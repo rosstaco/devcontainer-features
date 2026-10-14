@@ -1,0 +1,62 @@
+{
+  "id": "atlassian-teamwork-graph-cli",
+  "version": "1.0.0",
+  "name": "Atlassian Teamwork Graph CLI (twg)",
+  "description": "Installs the Atlassian Teamwork Graph CLI (twg) for working with Jira, Confluence, Bitbucket, JSM, Loom, Trello and the Teamwork Graph from the command line and from AI coding agents",
+  "documentationURL": "https://github.com/rosstaco/devcontainer-features/tree/main/src/atlassian-teamwork-graph-cli",
+  "options": {
+    "version": {
+      "type": "string",
+      "proposals": [
+        "latest"
+      ],
+      "default": "latest",
+      "description": "Version of twg to install. Use 'latest' (current stable release) or a specific version like '1.3.5'. Atlassian blocks versions below a published minimum, so old pins may stop working"
+    },
+    "installSkills": {
+      "type": "boolean",
+      "default": false,
+      "description": "Run 'twg skills install --yes' for the remote user, installing TWG agent skills into ~/.agents/skills and ~/.claude/skills"
+    },
+    "enableTelemetry": {
+      "type": "boolean",
+      "default": false,
+      "description": "Allow twg runtime telemetry. When false (the default), DO_NOT_TRACK=1 and TWG_DISABLE_3P_DATA_TELEMETRY=1 are exported for login shells (/etc/profile.d) and non-interactive bash (BASH_ENV)"
+    },
+    "persistAuth": {
+      "type": "boolean",
+      "default": true,
+      "description": "Symlink ~/.config/twg (credentials, site, settings) to a per-dev-container named volume so 'twg login' survives container rebuilds"
+    },
+    "configureBrowser": {
+      "type": "boolean",
+      "default": true,
+      "description": "Install an xdg-open shim in /usr/local/bin that prefers $BROWSER (e.g. the VS Code browser helper) so 'twg login' opens the OAuth page on your host instead of failing inside the container"
+    }
+  },
+  "mounts": [
+    {
+      "source": "${devcontainerId}-twg-config",
+      "target": "/twg-config",
+      "type": "volume"
+    }
+  ],
+  "containerEnv": {
+    "ATLASSIAN_TEAMWORK_GRAPH_CLI_PREV_BASH_ENV": "${BASH_ENV}",
+    "BASH_ENV": "/etc/atlassian-teamwork-graph-cli/bash_env"
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "github.copilot.chat.codeGeneration.instructions": [
+          {
+            "text": "This dev container includes `twg`, the Atlassian Teamwork Graph CLI, pre-installed and available on the `PATH`. Use it to work with Jira, Confluence, Bitbucket, JSM and other Atlassian Cloud products from the command line (run `twg --help` to discover commands, and prefer `--output json` for machine-readable output). Authenticate with `twg login` (interactive) or the `TWG_TOKEN`/`TWG_USER`/`TWG_SITE` environment variables; never ask for, echo or log a token."
+          }
+        ]
+      }
+    }
+  },
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ]
+}

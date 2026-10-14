@@ -1,0 +1,28 @@
+{
+    "version": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "atlassian-teamwork-graph-cli": {
+                "version": "1.3.5"
+            }
+        }
+    },
+    "skills": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "atlassian-teamwork-graph-cli": {
+                "installSkills": true
+            }
+        }
+    },
+    "opt-outs": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "atlassian-teamwork-graph-cli": {
+                "enableTelemetry": true,
+                "persistAuth": false,
+                "configureBrowser": false
+            }
+        }
+    }
+}

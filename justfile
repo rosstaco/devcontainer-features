@@ -25,6 +25,10 @@ build-gitlab-ci-local:
 build-atlassian-jira-confluence-cli:
     just build-feature atlassian-jira-confluence-cli
 
+# Build Atlassian Teamwork Graph CLI (twg) feature
+build-atlassian-teamwork-graph-cli:
+    just build-feature atlassian-teamwork-graph-cli
+
 # Build Package Source Overrides feature
 build-package-source-overrides:
     just build-feature package-source-overrides
@@ -35,6 +39,7 @@ build-all:
     just build-microsoft-security-devops-cli
     just build-gitlab-ci-local
     just build-atlassian-jira-confluence-cli
+    just build-atlassian-teamwork-graph-cli
     just build-package-source-overrides
 
 # Generate feature README.md files from devcontainer-feature.json and NOTES.md
@@ -46,6 +51,7 @@ clean:
     rm -rf .devcontainer/ohmyposh
     rm -rf .devcontainer/gitlab-ci-local
     rm -rf .devcontainer/atlassian-jira-confluence-cli
+    rm -rf .devcontainer/atlassian-teamwork-graph-cli
     rm -rf .devcontainer/package-source-overrides
     rm -f .devcontainer/*.tgz
     echo "✓ Cleaned local features"
